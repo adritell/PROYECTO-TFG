@@ -1,7 +1,9 @@
 package com.api.videojuegos.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 public class Calificacion {
     
@@ -21,39 +23,7 @@ public class Calificacion {
     @JoinColumn(name = "videojuego_id")
     private Videojuegos videojuego;
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public int getValoracion() {
-		return valoracion;
-	}
-
-	public void setValoracion(int valoracion) {
-		this.valoracion = valoracion;
-	}
-
-	public Usuario getUsuario() {
-		return usuario;
-	}
-
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
-	}
-
-	public Videojuegos getVideojuego() {
-		return videojuego;
-	}
-
-	public void setVideojuego(Videojuegos videojuego) {
-		this.videojuego = videojuego;
-	}
-    
-    
+	
 
     
 }

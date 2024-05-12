@@ -8,9 +8,9 @@ import com.api.videojuegos.entity.Rol;
 public class JwtAuthenticationResponse {
 
     private String token;
-    private String nombre;
+    /*private String nombre;
     private Set<Rol> roles;
-    private LocalDateTime expirationDate;
+    private LocalDateTime expirationDate;*/
 
     public JwtAuthenticationResponse(String token) {
         this.token = token;
@@ -24,7 +24,7 @@ public class JwtAuthenticationResponse {
         this.token = token;
     }
 
-    public String getNombre() {
+   /* public String getNombre() {
         return nombre;
     }
 
@@ -46,7 +46,7 @@ public class JwtAuthenticationResponse {
 
     public void setExpirationDate(LocalDateTime expirationDate) {
         this.expirationDate = expirationDate;
-    }
+    }*/
 
     public static JwtAuthenticationResponseBuilder builder() {
         return new JwtAuthenticationResponseBuilder();

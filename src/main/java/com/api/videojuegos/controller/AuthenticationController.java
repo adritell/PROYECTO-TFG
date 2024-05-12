@@ -110,8 +110,8 @@ public class AuthenticationController {
             Usuario user = userRepository.findByEmail(userName)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-            // Calcular la fecha de expiración del token (por ejemplo, 7 días a partir de ahora)
-            LocalDateTime expirationDateTime = LocalDateTime.now().plusDays(7);
+            // Calcular la fecha de expiración del token (por ejemplo, 1 días a partir de ahora)
+            LocalDateTime expirationDateTime = LocalDateTime.now().plusDays(1);
             Instant expirationInstant = expirationDateTime.atZone(ZoneId.systemDefault()).toInstant();
 
             // Verificar si el token ha expirado antes de agregarlo a la base de datos

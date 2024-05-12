@@ -76,7 +76,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         
         // Verificar si el usuario ha confirmado su correo electrónico
         if (!user.isActivo()) {
-            // El usuario no ha confirmado su correo electrónico, devuelve un mensaje de error
+            // Si el usuario no ha confirmado su correo electrónico, devuelve un mensaje de error
             throw new IllegalArgumentException("You must confirm your email before logging in.");
         }
 
@@ -85,22 +85,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         
-        // Obtener información adicional del usuario
+        // Obtener información adicional del usuario para volcarla en el token
         String nombre = user.getFirstName();
         Set<Rol> roles = user.getRoles();
         
-        // Calcular la fecha de expiración del token (por ejemplo, 7 días a partir de ahora)
-        LocalDateTime expirationDateTime = LocalDateTime.now().plusDays(7);
+        // Calcular la fecha de expiración del token (por ejemplo, 1 días a partir de ahora)
+        LocalDateTime expirationDateTime = LocalDateTime.now().plusDays(1);
         Instant expirationInstant = expirationDateTime.atZone(ZoneId.systemDefault()).toInstant();
         
-        // Generar el token JWT con la información adicional
-        String jwt = jwtServiceImpl.createToken(user, expirationInstant, roles);
+        // Generar el token JWT con la información adicional en el payload
+        String jwt = jwtServiceImpl.createToken(user, expirationInstant, roles,nombre);
         
-        // Crear el objeto de respuesta que incluya el token y la información adicional
+        // Crear el objeto de respuesta que incluye el token
         JwtAuthenticationResponse response = new JwtAuthenticationResponse(jwt);
-        response.setNombre(nombre);
+        /*response.setNombre(nombre);
         response.setRoles(roles);
-        response.setExpirationDate(expirationDateTime);
+        response.setExpirationDate(expirationDateTime);*/
         
         return response;
     }

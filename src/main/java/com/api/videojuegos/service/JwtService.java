@@ -17,6 +17,6 @@ public interface JwtService {
     
     boolean isTokenValid(String token, UserDetails userDetails);
     
-    String createToken(Usuario user, Instant expirationInstant, Set<Rol> roles);
+    String createToken(Usuario user, Instant expirationInstant, Set<Rol> roles, String nombreUsuario);
     
 }

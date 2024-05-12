@@ -3,7 +3,9 @@ package com.api.videojuegos.entity;
 import java.util.Date;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 public class ActividadUsuario {
 
@@ -35,7 +37,6 @@ public class ActividadUsuario {
     
     
     
-    // Getters y setters
 
 
 	public Long getId() {

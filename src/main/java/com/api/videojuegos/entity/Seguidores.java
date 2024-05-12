@@ -1,7 +1,9 @@
 package com.api.videojuegos.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 public class Seguidores {
 
