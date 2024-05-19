@@ -6,6 +6,7 @@ import com.api.videojuegos.entity.Videojuegos;
 import com.api.videojuegos.repository.UsuarioRepository;
 import com.api.videojuegos.repository.VideojuegosRepository;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -72,7 +73,8 @@ public class InicializarDatos implements CommandLineRunner {
          videojuegos1.setAnioPublicacion(2002); // Año de publicación
          videojuegos1.setCalificacionPorEdades("A"); // Calificación por edades
          videojuegos1.setPublicador("Publicador de Ratchet and Clank");
-         videojuegos1.setPlataforma("PlayStation"); // Plataforma
+         // Configurar las plataformas
+         videojuegos1.setPlataformas(Arrays.asList("PlayStation", "XBOX", "Nintendo Switch"));
          videojuegosRepository.save(videojuegos1);
 
          // Videojuego 2
@@ -83,7 +85,8 @@ public class InicializarDatos implements CommandLineRunner {
          videojuegos2.setAnioPublicacion(2005); // Año de publicación
          videojuegos2.setCalificacionPorEdades("B"); // Calificación por edades
          videojuegos2.setPublicador("Publicador de God of War");
-         videojuegos2.setPlataforma("PlayStation"); // Plataforma
+         // Configurar las plataformas
+         videojuegos2.setPlataformas(Arrays.asList("PlayStation", "XBOX", "Nintendo Switch"));
          videojuegosRepository.save(videojuegos2);
 
          // Videojuego 3
@@ -94,7 +97,8 @@ public class InicializarDatos implements CommandLineRunner {
          videojuegos3.setAnioPublicacion(2003); // Año de publicación
          videojuegos3.setCalificacionPorEdades("C"); // Calificación por edades
          videojuegos3.setPublicador("Publicador de Call of Duty");
-         videojuegos3.setPlataforma("Multiplataforma"); // Plataforma
+         // Configurar las plataformas
+         videojuegos3.setPlataformas(Arrays.asList("PlayStation", "XBOX", "Nintendo Switch"));
          videojuegosRepository.save(videojuegos3);
 
         } catch (Exception e) {

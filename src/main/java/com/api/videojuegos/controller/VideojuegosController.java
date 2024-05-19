@@ -122,7 +122,7 @@ public class VideojuegosController {
             boolean deleted = videojuegosService.deleteVideojuego(id);
             if (deleted) {
                 logger.info("Deleted videojuegos with ID: {}", id);
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return new ResponseEntity<>("Videogame deleted sucessfully. ",HttpStatus.NO_CONTENT);
             } else {
                 logger.warn("Videojuegos with ID {} not found for deletion.", id);
                 return new ResponseEntity<>("Videojuegos not found for deletion", HttpStatus.NOT_FOUND);

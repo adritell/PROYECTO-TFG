@@ -1,6 +1,7 @@
 package com.api.videojuegos.entity;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -34,8 +35,10 @@ public class Videojuegos {
     @Column(nullable = false)
     private String publicador;
 
-    @Column(nullable = false)
-    private String plataforma;
+    @ElementCollection
+    @CollectionTable(name = "videojuego_plataforma", joinColumns = @JoinColumn(name = "videojuego_id"))
+    @Column(name = "plataforma",  nullable = false)
+    private List<String> plataformas;
     
     
     // Relación con las calificaciones de los usuarios
@@ -55,12 +58,6 @@ public class Videojuegos {
         inverseJoinColumns = @JoinColumn(name = "usuario_id")
     )
     private Set<Usuario> usuariosFavoritos = new HashSet<>(); // Nueva relación con usuarios favoritos
-    
-    
-    
-	
-	
-	
     
     
 }
