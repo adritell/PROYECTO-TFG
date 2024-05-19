@@ -63,6 +63,11 @@ public class Usuario implements UserDetails {
 
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.name())).collect(Collectors.toList());
     }
+    
+    
+    public boolean isAdmin() {
+        return roles.stream().anyMatch(role -> role == Rol.ROLE_ADMIN);
+    }
 
     public Long getId() {
         return id;

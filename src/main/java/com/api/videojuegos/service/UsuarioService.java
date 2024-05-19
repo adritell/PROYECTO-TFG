@@ -24,4 +24,7 @@ public interface UsuarioService {
     Usuario updateUser(Long id, Usuario user); 
     
     void deleteUser(Long id); 
+    
+    boolean isAdmin(String username);
+
 }

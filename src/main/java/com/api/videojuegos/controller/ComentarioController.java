@@ -54,11 +54,28 @@ public class ComentarioController {
      * @return Lista de todos los comentarios.
      */
     @GetMapping
-    public ResponseEntity<List<Comentario>> getAllComentarios() {
+    public ResponseEntity<List<Comentario>> getAllComentarios(@RequestHeader(name = "Authorization") String token) {
+    	 // Recortar el token para eliminar el prefijo "Bearer "
+        String jwtToken = token.substring(7);
+        
+        // Extraer el nombre de usuario del token JWT
+        String userName = jwtService.extractUserName(jwtToken);
+        
+        // Verificar si el usuario es administrador
+        boolean isAdmin = usuarioService.isAdmin(userName);
         try {
-            List<Comentario> comentarios = comentarioService.getAllComments();
-            logger.info("Returned {} comentarios.", comentarios.size());
-            return new ResponseEntity<>(comentarios, HttpStatus.OK);
+        	 List<Comentario> comentarios;
+             
+             // Si el usuario es administrador, obtener todos los comentarios
+             if (isAdmin) {
+                 comentarios = comentarioService.getAllComments();
+             } else {
+                 // Si no es administrador, obtener solo los comentarios del usuario
+                 comentarios = comentarioService.getComentariosByUser(userName);
+             }
+             
+             logger.info("Returned {} comentarios.", comentarios.size());
+             return new ResponseEntity<>(comentarios, HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error while getting all comments.", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

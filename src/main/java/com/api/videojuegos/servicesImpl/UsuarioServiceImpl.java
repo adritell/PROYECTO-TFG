@@ -74,4 +74,11 @@ public class UsuarioServiceImpl implements UsuarioService {
         return (UserDetailsService) username -> userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
+    
+    @Override
+    public boolean isAdmin(String email) {
+        Usuario user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return user.isAdmin(); 
+    }
 }

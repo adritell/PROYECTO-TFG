@@ -12,4 +12,6 @@ public interface ComentarioService {
     void addComment(Comentario comment);
     
     void deleteComment(Long id);
+    
+    List<Comentario> getComentariosByUser(String email);
 }

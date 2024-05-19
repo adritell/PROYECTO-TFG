@@ -48,7 +48,7 @@ class ComentarioControllerTest {
         when(comentarioService.getAllComments()).thenReturn(mockComentarios);
 
         // Act
-        ResponseEntity<List<Comentario>> response = comentarioController.getAllComentarios();
+        ResponseEntity<List<Comentario>> response = comentarioController.getAllComentarios("dummy-token");
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
