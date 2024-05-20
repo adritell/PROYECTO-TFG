@@ -1,6 +1,8 @@
 package com.api.videojuegos.controller;
 
 import com.api.videojuegos.dto.ComentarioRequest;
+import com.api.videojuegos.dto.ComentarioResponse;
+import com.api.videojuegos.dto.UsuarioResponse;
 import com.api.videojuegos.entity.Comentario;
 import com.api.videojuegos.entity.Token;
 import com.api.videojuegos.entity.Usuario;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 /**
@@ -54,28 +57,36 @@ public class ComentarioController {
      * @return Lista de todos los comentarios.
      */
     @GetMapping
-    public ResponseEntity<List<Comentario>> getAllComentarios(@RequestHeader(name = "Authorization") String token) {
-    	 // Recortar el token para eliminar el prefijo "Bearer "
-        String jwtToken = token.substring(7);
-        
-        // Extraer el nombre de usuario del token JWT
-        String userName = jwtService.extractUserName(jwtToken);
-        
-        // Verificar si el usuario es administrador
-        boolean isAdmin = usuarioService.isAdmin(userName);
+    public ResponseEntity<List<ComentarioResponse>> getAllComentarios(@RequestHeader(name = "Authorization") String token) {
         try {
-        	 List<Comentario> comentarios;
-             
-             // Si el usuario es administrador, obtener todos los comentarios
-             if (isAdmin) {
-                 comentarios = comentarioService.getAllComments();
-             } else {
-                 // Si no es administrador, obtener solo los comentarios del usuario
-                 comentarios = comentarioService.getComentariosByUser(userName);
-             }
-             
-             logger.info("Returned {} comentarios.", comentarios.size());
-             return new ResponseEntity<>(comentarios, HttpStatus.OK);
+            // Extraer el nombre de usuario del token JWT
+            String tokenValue = token.startsWith("Bearer ") ? token.substring(7) : token;
+            String userName = jwtService.extractUserName(tokenValue);
+
+            // Verificar si el usuario es administrador
+            boolean isAdmin = usuarioService.isAdmin(userName);
+
+            List<Comentario> comentarios;
+
+            // Si el usuario es administrador, obtener todos los comentarios
+            if (isAdmin) {
+                comentarios = comentarioService.getAllComments();
+            } else {
+                // Si no es administrador, obtener solo los comentarios del usuario
+                comentarios = comentarioService.getComentariosByUser(userName);
+            }
+
+            // Convertir Comentarios a ComentarioResponse
+            List<ComentarioResponse> comentarioResponses = comentarios.stream()
+                    .map(comentario -> new ComentarioResponse(
+                            comentario.getId(),
+                            comentario.getText(),
+                            new UsuarioResponse(comentario.getUsuario().getFirstName(), comentario.getUsuario().getEmail())
+                    ))
+                    .collect(Collectors.toList());
+
+            logger.info("Returned {} comentarios.", comentarios.size());
+            return new ResponseEntity<>(comentarioResponses, HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error while getting all comments.", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -122,9 +133,11 @@ public class ComentarioController {
       verificar la autenticidad del token en la base de datos, te aseguras de que el usuario que está realizando
        la solicitud sea válido y esté activo en el sistema.
             	 */
+            	// Obtener el usuario basado en el token de autorización
                 String userEmail = jwtService.extractUserName(tokenValue);
                 Optional<Usuario> usuarioOptional = usuarioService.findByEmail(userEmail);
                 Usuario usuario = usuarioOptional.orElse(null);
+
                 if (usuario == null) {
                     System.out.println("El usuario no existe");
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Manejar el caso en que el usuario no exista
@@ -133,11 +146,9 @@ public class ComentarioController {
                 // Obtener el videojuego basado en el nombre proporcionado en la solicitud
                 Optional<Videojuegos> videojuegoOptional = videojuegosService.findByNombre(comentarioRequest.getGame());
                 Videojuegos videojuego = videojuegoOptional.orElse(null);
-                
-                // Manejar el caso en que el videojuego no exista
-                if (videojuego == null) {
-                	System.out.println("El videojuego no exite");
 
+                if (videojuego == null) {
+                    System.out.println("El videojuego no exite");
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
 

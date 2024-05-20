@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.api.videojuegos.controller.ComentarioController;
 import com.api.videojuegos.dto.ComentarioRequest;
+import com.api.videojuegos.dto.ComentarioResponse;
 import com.api.videojuegos.entity.Comentario;
 import com.api.videojuegos.entity.Usuario;
 import com.api.videojuegos.entity.Videojuegos;
@@ -48,7 +49,7 @@ class ComentarioControllerTest {
         when(comentarioService.getAllComments()).thenReturn(mockComentarios);
 
         // Act
-        ResponseEntity<List<Comentario>> response = comentarioController.getAllComentarios("dummy-token");
+        ResponseEntity<List<ComentarioResponse>> response = comentarioController.getAllComentarios("dummy-token");
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -75,11 +76,9 @@ class ComentarioControllerTest {
         // Arrange
         ComentarioRequest comentarioRequest = new ComentarioRequest();
         comentarioRequest.setText("Test comment");
-        comentarioRequest.setUser("test@example.com");
         comentarioRequest.setGame("Test Game");
 
         Usuario mockUsuario = new Usuario();
-        when(usuarioService.findByEmail(comentarioRequest.getUser())).thenReturn(Optional.of(mockUsuario));
 
         Videojuegos mockVideojuego = new Videojuegos();
         when(videojuegosService.findByNombre(comentarioRequest.getGame())).thenReturn(Optional.of(mockVideojuego));

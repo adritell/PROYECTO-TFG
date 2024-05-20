@@ -1,6 +1,16 @@
 package com.api.videojuegos.controller;
 
+import com.api.videojuegos.dto.CalificacionResponse;
+import com.api.videojuegos.dto.ComentarioResponse;
+import com.api.videojuegos.dto.UsuarioResponse;
+import com.api.videojuegos.dto.VideojuegoResponse;
+import com.api.videojuegos.entity.Calificacion;
+import com.api.videojuegos.entity.Comentario;
+import com.api.videojuegos.entity.Usuario;
 import com.api.videojuegos.entity.Videojuegos;
+import com.api.videojuegos.service.CalificacionService;
+import com.api.videojuegos.service.ComentarioService;
+import com.api.videojuegos.service.UsuarioService;
 import com.api.videojuegos.service.VideojuegosService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Controlador para las operaciones relacionadas con los videojuegos.
@@ -24,17 +35,39 @@ public class VideojuegosController {
 
     @Autowired
     private VideojuegosService videojuegosService;
+    
+    @Autowired
+    private CalificacionService calificacionService;
+    
+    @Autowired
+    private ComentarioService comentarioService;
+    
+    @Autowired
+    private UsuarioService usuarioService;
 
     /**
      * Obtiene la lista de todos los videojuegos.
      * @return Lista de todos los videojuegos.
      */
     @GetMapping
-    public ResponseEntity<List<Videojuegos>> getAllVideojuegos() {
+    public ResponseEntity<List<VideojuegoResponse>> getAllVideojuegos() {
         try {
             List<Videojuegos> videojuegos = videojuegosService.getAllVideojuegos();
-            logger.info("Returned {} videojuegos.", videojuegos.size());
-            return new ResponseEntity<>(videojuegos, HttpStatus.OK);
+
+            List<VideojuegoResponse> videojuegoResponses = videojuegos.stream()
+                .map(videojuego -> new VideojuegoResponse(
+                    videojuego.getId(),
+                    videojuego.getNombre(),
+                    videojuego.getGenero(),
+                    videojuego.getDescripcion(),
+                    videojuego.getAnioPublicacion(),
+                    videojuego.getCalificacionPorEdades(),
+                    videojuego.getPublicador(),
+                    videojuego.getPlataformas()
+                ))
+                .collect(Collectors.toList());
+
+            return new ResponseEntity<>(videojuegoResponses, HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error while getting all videojuegos.", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -53,8 +86,21 @@ public class VideojuegosController {
             Optional<Videojuegos> optionalVideojuegos = videojuegosService.getVideojuegoById(id);
             if (optionalVideojuegos.isPresent()) {
                 Videojuegos videojuegos = optionalVideojuegos.get();
+
+                // Mapear Videojuegos a VideojuegoResponse
+                VideojuegoResponse videojuegoResponse = new VideojuegoResponse(
+                    videojuegos.getId(),
+                    videojuegos.getNombre(),
+                    videojuegos.getGenero(),
+                    videojuegos.getDescripcion(),
+                    videojuegos.getAnioPublicacion(),
+                    videojuegos.getCalificacionPorEdades(),
+                    videojuegos.getPublicador(),
+                    videojuegos.getPlataformas()
+                );
+
                 logger.info("Returned videojuegos with ID: {}", id);
-                return new ResponseEntity<>(videojuegos, HttpStatus.OK);
+                return new ResponseEntity<>(videojuegoResponse, HttpStatus.OK);
             } else {
                 logger.warn("Videojuegos with ID {} not found.", id);
                 return new ResponseEntity<>("Videojuegos not found", HttpStatus.NOT_FOUND);
@@ -150,4 +196,89 @@ public class VideojuegosController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /* NUEVOS METODOS A PROBAR:*/
+    
+    /**
+     * Obtiene las calificaciones de un videojuego por su ID.
+     * @param id ID del videojuego.
+     * @return Lista de calificaciones asociadas al videojuego.
+     */
+    @GetMapping("/{id}/calificaciones")
+    public ResponseEntity<List<CalificacionResponse>> getCalificacionesByVideojuego(@PathVariable Long id) {
+        try {
+            List<Calificacion> calificaciones = calificacionService.getCalificacionesByVideojuegoId(id);
+            
+            // Mapear cada Calificacion a CalificacionResponse
+            List<CalificacionResponse> calificacionResponses = calificaciones.stream()
+                .map(calificacion -> new CalificacionResponse(
+                    calificacion.getId(),
+                    calificacion.getValoracion(),
+                    calificacion.getUsuario().getUsername()
+                ))
+                .collect(Collectors.toList());
+
+            return new ResponseEntity<>(calificacionResponses, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while getting calificaciones for videojuego id: " + id, e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    
+    
+ // Endpoint para obtener los comentarios de un videojuego
+    @GetMapping("/{id}/comentarios")
+    public ResponseEntity<List<ComentarioResponse>> getComentariosByVideojuego(@PathVariable Long id) {
+        try {
+            List<Comentario> comentarios = comentarioService.getComentariosByVideojuegoId(id);
+
+            List<ComentarioResponse> comentarioResponses = comentarios.stream()
+                .map(comentario -> new ComentarioResponse(
+                    comentario.getId(),
+                    comentario.getText(),
+                    new UsuarioResponse(comentario.getUsuario().getFirstName(), comentario.getUsuario().getEmail())
+                ))
+                .collect(Collectors.toList());
+
+            return ResponseEntity.ok(comentarioResponses); // Especifica el tipo de ResponseEntity
+        } catch (Exception e) {
+            logger.error("Error while getting comentarios for videojuego id: " + id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // Especifica el tipo de ResponseEntity
+        }
+    }
+    
+    
+    /*
+     endpoint para traer los usuarios que han seleccionado un videojuego específico como favorito, basándose en el ID del videojuego.
+     Para futuras funciones como medir la popularidad de un videojuego basado en cuántos usuarios lo han marcado como favorito, 
+     crear sistemas de recomendaciones personalizadas para otros usuarios,etc.*/
+     
+    @GetMapping("/{id}/usuarios-favoritos")
+    public ResponseEntity<List<UsuarioResponse>> getUsuariosFavoritosByVideojuego(@PathVariable Long id) {
+        try {
+            List<Usuario> usuariosFavoritos = usuarioService.getUsuariosFavoritosByVideojuegoId(id);
+
+            List<UsuarioResponse> usuarioResponses = usuariosFavoritos.stream()
+                .map(usuario -> new UsuarioResponse(usuario.getFirstName(), usuario.getEmail()))
+                .collect(Collectors.toList());
+
+            return new ResponseEntity<>(usuarioResponses, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while getting usuarios favoritos for videojuego id: " + id, e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    
+    
 }

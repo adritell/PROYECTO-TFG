@@ -1,6 +1,7 @@
 package com.api.videojuegos.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.api.videojuegos.dto.UsuarioResponse;
+import com.api.videojuegos.dto.VideojuegoResponse;
 import com.api.videojuegos.entity.Usuario;
+import com.api.videojuegos.entity.Videojuegos;
 import com.api.videojuegos.service.UsuarioService;
 
 /**
@@ -111,4 +114,35 @@ public class UsuarioController {
         // Llamada al servicio de usuarios para crear un nuevo usuario
         return usuarioService.createUser(usuario);
     }
+    
+    
+    /*
+     NUEVOS METODOS A PROBAR
+      */
+    
+    @GetMapping("/{id}/videojuegos-favoritos")
+    public ResponseEntity<List<VideojuegoResponse>> getVideojuegosFavoritosByUsuario(@PathVariable Long id) {
+        try {
+            List<Videojuegos> videojuegosFavoritos = usuarioService.getVideojuegosFavoritosByUsuarioId(id);
+
+            List<VideojuegoResponse> videojuegoResponses = videojuegosFavoritos.stream()
+                .map(videojuego -> new VideojuegoResponse(
+                    videojuego.getId(),
+                    videojuego.getNombre(),
+                    videojuego.getGenero(),
+                    videojuego.getDescripcion(),
+                    videojuego.getAnioPublicacion(),
+                    videojuego.getCalificacionPorEdades(),
+                    videojuego.getPublicador(),
+                    videojuego.getPlataformas()
+                ))
+                .collect(Collectors.toList());
+
+            return new ResponseEntity<>(videojuegoResponses, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while getting videojuegos favoritos for usuario id: " + id, e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
 }
