@@ -2,6 +2,8 @@ package com.api.videojuegos.service;
 
 import com.api.videojuegos.dto.UsuarioResponse;
 import com.api.videojuegos.entity.Usuario;
+import com.api.videojuegos.entity.Videojuegos;
+
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
@@ -26,5 +28,9 @@ public interface UsuarioService {
     void deleteUser(Long id); 
     
     boolean isAdmin(String username);
+    
+    List<Usuario> getUsuariosFavoritosByVideojuegoId(Long videojuegoId);
+
+    List<Videojuegos> getVideojuegosFavoritosByUsuarioId(Long usuarioId);
 
 }

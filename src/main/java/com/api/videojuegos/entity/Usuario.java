@@ -163,6 +163,10 @@ public class Usuario implements UserDetails {
 		this.tokenConfirmacion = tokenConfirmacion;
 	}
 	
+	public Set<Videojuegos> getVideojuegosFavoritos() {
+	    return videojuegosFavoritos;
+	}
+	
 	
     
     

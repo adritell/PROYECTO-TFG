@@ -14,4 +14,7 @@ public interface ComentarioService {
     void deleteComment(Long id);
     
     List<Comentario> getComentariosByUser(String email);
+    
+    List<Comentario> getComentariosByVideojuegoId(Long videojuegoId);
+
 }

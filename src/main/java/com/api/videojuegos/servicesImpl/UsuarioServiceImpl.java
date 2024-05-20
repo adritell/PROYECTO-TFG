@@ -2,6 +2,7 @@ package com.api.videojuegos.servicesImpl;
 
 import com.api.videojuegos.dto.UsuarioResponse;
 import com.api.videojuegos.entity.Usuario;
+import com.api.videojuegos.entity.Videojuegos;
 import com.api.videojuegos.repository.UsuarioRepository;
 import com.api.videojuegos.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -80,5 +82,18 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         return user.isAdmin(); 
+    }
+    
+    
+    @Override
+    public List<Usuario> getUsuariosFavoritosByVideojuegoId(Long videojuegoId) {
+        return userRepository.findUsuariosFavoritosByVideojuegoId(videojuegoId);
+    }
+    
+    
+    @Override
+    public List<Videojuegos> getVideojuegosFavoritosByUsuarioId(Long usuarioId) {
+        Optional<Usuario> usuario = userRepository.findById(usuarioId);
+        return usuario.map(Usuario::getVideojuegosFavoritos).orElse(Collections.emptySet()).stream().toList();
     }
 }
