@@ -1,8 +1,11 @@
 package com.api.videojuegos.servicesImpl;
 
+import com.api.videojuegos.dto.UsuarioAdminResponse;
 import com.api.videojuegos.dto.UsuarioResponse;
+import com.api.videojuegos.entity.Rol;
 import com.api.videojuegos.entity.Usuario;
 import com.api.videojuegos.entity.Videojuegos;
+import com.api.videojuegos.exceptions.BadRequestException;
 import com.api.videojuegos.repository.UsuarioRepository;
 import com.api.videojuegos.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +28,19 @@ public class UsuarioServiceImpl implements UsuarioService {
     public Usuario createUser(Usuario user) {
         return userRepository.save(user);
     }
+    
+   
 
     @Override
     public List<UsuarioResponse> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(user -> new UsuarioResponse(user.getFirstName(), user.getEmail()))
                 .collect(Collectors.toList());
+    }
+    
+    @Override
+    public List<Usuario> getAllUsuarios() {
+        return userRepository.findAll();
     }
 
     @Override
@@ -48,17 +58,15 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public Usuario updateUser(Long id, Usuario user) {
-        Optional<Usuario> optionalUsuario = userRepository.findById(id);
-        if (optionalUsuario.isPresent()) {
-            Usuario usuarioExistente = optionalUsuario.get();
+        return userRepository.findById(id).map(usuarioExistente -> {
             usuarioExistente.setFirstName(user.getFirstName());
+            usuarioExistente.setLastName(user.getLastName());
             usuarioExistente.setEmail(user.getEmail());
-            usuarioExistente.setRoles(user.getRoles()); 
-            
+            usuarioExistente.setPassword(user.getPassword()); // Asegúrate de manejar la contraseña adecuadamente (cifrado, etc.)
+            usuarioExistente.setActivo(user.isActivo());
+            usuarioExistente.setRoles(user.getRoles());
             return userRepository.save(usuarioExistente);
-        } else {
-            throw new IllegalArgumentException("User with ID " + id + " not found");
-        }
+        }).orElseThrow(() -> new BadRequestException("Usuario con ID " + id + " no encontrado"));
     }
     
     @Override
@@ -81,13 +89,21 @@ public class UsuarioServiceImpl implements UsuarioService {
     public boolean isAdmin(String email) {
         Usuario user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        return user.isAdmin(); 
+
+        return user.getRoles().stream()
+                .anyMatch(role -> role == Rol.ROLE_ADMIN);
     }
     
     
     @Override
     public List<Usuario> getUsuariosFavoritosByVideojuegoId(Long videojuegoId) {
         return userRepository.findUsuariosFavoritosByVideojuegoId(videojuegoId);
+    }
+    
+    
+    @Override
+    public Optional<Usuario> getUsuarioById(Long id) {
+        return userRepository.findById(id);
     }
     
     

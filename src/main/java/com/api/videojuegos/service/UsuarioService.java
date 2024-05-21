@@ -16,8 +16,14 @@ public interface UsuarioService {
     UserDetailsService userDetailsService();
 
     List<UsuarioResponse> getAllUsers();
+    
+    List<Usuario> getAllUsuarios();
+    
+    Optional<Usuario> getUsuarioById(Long id);
+
 
     UsuarioResponse findUserById(Long id);
+    
     
     Optional<Usuario> findByEmail(String email);
     

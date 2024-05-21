@@ -16,5 +16,8 @@ public interface ComentarioService {
     List<Comentario> getComentariosByUser(String email);
     
     List<Comentario> getComentariosByVideojuegoId(Long videojuegoId);
+    
+    Comentario updateComment(Comentario comentario);
+
 
 }

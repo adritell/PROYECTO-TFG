@@ -7,6 +7,8 @@ import com.api.videojuegos.entity.Comentario;
 import com.api.videojuegos.entity.Token;
 import com.api.videojuegos.entity.Usuario;
 import com.api.videojuegos.entity.Videojuegos;
+import com.api.videojuegos.exceptions.BadRequestException;
+import com.api.videojuegos.exceptions.UnauthorizedAccessException;
 import com.api.videojuegos.repository.TokenRepository;
 import com.api.videojuegos.service.ComentarioService;
 import com.api.videojuegos.service.UsuarioService;
@@ -19,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -185,13 +189,23 @@ public class ComentarioController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Void> updateComentario(@PathVariable Long id, @RequestBody ComentarioRequest comentarioRequest) {
-        try {
+        
+            // Obtener el usuario actualmente autenticado desde el contexto de seguridad
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userEmail = authentication.getName();
+            boolean isAdmin = usuarioService.isAdmin(userEmail);
+
             // Buscar el comentario por su ID
             Comentario comentarioExistente = comentarioService.findById(id);
             
             // Verificar si el comentario existe
             if (comentarioExistente == null) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                throw new BadRequestException("Comentario no encontrado");
+            }
+            
+            // Verificar si el usuario es administrador o el propietario del comentario
+            if (!isAdmin && !comentarioExistente.getUsuario().getEmail().equals(userEmail)) {
+                throw new UnauthorizedAccessException("No tiene permiso para actualizar este comentario");
             }
             
             // Actualizar el texto del comentario
@@ -202,10 +216,7 @@ public class ComentarioController {
             
             logger.info("Updated comment with ID: {}", id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            logger.error("Error while updating comment with ID: {}", id, e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        
     }
 
     /**
@@ -216,13 +227,26 @@ public class ComentarioController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Void> deleteComentario(@PathVariable Long id) {
-        try {
-            comentarioService.deleteComment(id);
-            logger.info("Deleted comment with ID: {}", id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            logger.error("Error while deleting comment with ID: {}", id, e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        // Obtener el usuario actualmente autenticado desde el contexto de seguridad
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        boolean isAdmin = usuarioService.isAdmin(userEmail);
+
+        // Obtener el comentario
+        Comentario comentario = comentarioService.findById(id);
+        if (comentario == null) {
+            throw new BadRequestException("Comentario no encontrado");
         }
+
+        // Verificar si el usuario es administrador o el propietario del comentario
+        if (!isAdmin && !comentario.getUsuario().getEmail().equals(userEmail)) {
+            throw new UnauthorizedAccessException("No tiene permiso para eliminar este comentario");
+        }
+
+        // Eliminar el comentario
+        comentarioService.deleteComment(id);
+        logger.info("Deleted comment with ID: {}", id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+    
 }

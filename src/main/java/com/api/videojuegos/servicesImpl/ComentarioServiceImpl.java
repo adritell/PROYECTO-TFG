@@ -58,5 +58,10 @@ public class ComentarioServiceImpl implements ComentarioService {
         Videojuegos videojuego = videojuegosRepository.findById(videojuegoId).orElse(null);
         return commentRepository.findByVideojuegos(videojuego);
     }
+    
+    @Override
+    public Comentario updateComment(Comentario comentario) {
+        return commentRepository.save(comentario);
+    }
 
 }
