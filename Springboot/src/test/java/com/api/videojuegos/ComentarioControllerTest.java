@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import com.api.videojuegos.controller.ComentarioController;
 import com.api.videojuegos.dto.ComentarioRequest;
 import com.api.videojuegos.dto.ComentarioResponse;
+import com.api.videojuegos.dto.UsuarioResponse;
 import com.api.videojuegos.entity.Comentario;
 import com.api.videojuegos.entity.Usuario;
 import com.api.videojuegos.entity.Videojuegos;
@@ -60,15 +61,22 @@ class ComentarioControllerTest {
     void getComentarioById_shouldReturnComentario() {
         // Arrange
         long comentarioId = 1L;
+        String token = "dummy-token";
         Comentario mockComentario = new Comentario();
         when(comentarioService.findById(comentarioId)).thenReturn(mockComentario);
 
         // Act
-        ResponseEntity<Comentario> response = comentarioController.getComentarioById(comentarioId);
+        ResponseEntity<ComentarioResponse> response = comentarioController.getComentarioById(comentarioId, token);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(mockComentario, response.getBody());
+        ComentarioResponse expectedResponse = new ComentarioResponse(
+            mockComentario.getId(),
+            mockComentario.getText(),
+            new UsuarioResponse(mockComentario.getUsuario().getFirstName(), mockComentario.getUsuario().getEmail()),
+            mockComentario.getFecha()
+        );
+        assertEquals(expectedResponse, response.getBody());
     }
 
     @Test

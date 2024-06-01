@@ -1,5 +1,7 @@
 package com.api.videojuegos.entity;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.*;
@@ -14,6 +16,8 @@ public class Comentario {
     private Long id;
     
     private String text;
+    
+    private LocalDateTime fecha;
     
     @ManyToOne
     @JoinColumn(name = "user_id")

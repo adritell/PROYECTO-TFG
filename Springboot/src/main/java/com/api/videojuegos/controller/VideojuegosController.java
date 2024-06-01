@@ -246,7 +246,8 @@ public class VideojuegosController {
                 .map(comentario -> new ComentarioResponse(
                     comentario.getId(),
                     comentario.getText(),
-                    new UsuarioResponse(comentario.getUsuario().getFirstName(), comentario.getUsuario().getEmail())
+                    new UsuarioResponse(comentario.getUsuario().getFirstName(), comentario.getUsuario().getEmail()),
+                    comentario.getFecha()
                 ))
                 .collect(Collectors.toList());
 

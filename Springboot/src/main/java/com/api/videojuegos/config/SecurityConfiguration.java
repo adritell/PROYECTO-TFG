@@ -41,7 +41,8 @@ public class SecurityConfiguration{
                                     requestMatchers(HttpMethod.GET, "/api/v1/auth**", "/api/v1/comentarios**").hasAnyAuthority(Rol.ROLE_USER.toString(), Rol.ROLE_ADMIN.toString())
                                     .requestMatchers(HttpMethod.POST, "/api/v1/comentarios**").hasAnyAuthority(Rol.ROLE_USER.toString(), Rol.ROLE_ADMIN.toString())
                                     .requestMatchers(HttpMethod.POST, "/api/v1/usuario**", "/api/v1/videojuegos**").hasAuthority(Rol.ROLE_ADMIN.toString())
-                                    .requestMatchers(HttpMethod.PUT, "/api/v1/videojuegos**").hasAuthority(Rol.ROLE_ADMIN.toString())
+                                    .requestMatchers(HttpMethod.PUT, "/api/v1/videojuegos/**").hasAuthority(Rol.ROLE_ADMIN.toString())
+                                    .requestMatchers(HttpMethod.DELETE, "/api/v1/videojuegos/**").hasAuthority(Rol.ROLE_ADMIN.toString())
                                     .anyRequest().authenticated())
                     .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                     .authenticationProvider(authenticationProvider()).addFilterBefore(

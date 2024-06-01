@@ -25,6 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -85,7 +86,8 @@ public class ComentarioController {
                     .map(comentario -> new ComentarioResponse(
                             comentario.getId(),
                             comentario.getText(),
-                            new UsuarioResponse(comentario.getUsuario().getFirstName(), comentario.getUsuario().getEmail())
+                            new UsuarioResponse(comentario.getUsuario().getFirstName(), comentario.getUsuario().getEmail()),
+                            comentario.getFecha()
                     ))
                     .collect(Collectors.toList());
 
@@ -97,22 +99,35 @@ public class ComentarioController {
         }
     }
 
-    /**
-     * Obtiene un comentario por su ID.
-     * @param id ID del comentario a obtener.
-     * @return Comentario correspondiente al ID proporcionado.
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<Comentario> getComentarioById(@PathVariable Long id) {
-        try {
-            Comentario comentario = comentarioService.findById(id);
-            logger.info("Returned comment with ID: {}", id);
-            return new ResponseEntity<>(comentario, HttpStatus.OK);
-        } catch (Exception e) {
-            logger.error("Error while getting comment with ID: {}", id, e);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
+    /* Obtiene un comentario por su ID.
+    * @param id ID del comentario a obtener.
+    * @return ComentarioResponse con los detalles del comentario.
+    */
+   @GetMapping("/{id}")
+   public ResponseEntity<ComentarioResponse> getComentarioById(@PathVariable Long id, @RequestHeader(name = "Authorization") String token) {
+       try {
+           // Obtener el comentario por su ID
+           Comentario comentario = comentarioService.findById(id);
+           
+           if (comentario == null) {
+               return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+           }
+
+           // Convertir Comentario a ComentarioResponse
+           ComentarioResponse comentarioResponse = new ComentarioResponse(
+                   comentario.getId(),
+                   comentario.getText(),
+                   new UsuarioResponse(comentario.getUsuario().getFirstName(), comentario.getUsuario().getEmail()),
+                   comentario.getFecha()
+           );
+
+           logger.info("Returned comentario with ID: {}", id);
+           return new ResponseEntity<>(comentarioResponse, HttpStatus.OK);
+       } catch (Exception e) {
+           logger.error("Error while getting comentario by ID.", e);
+           return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+       }
+   }
 
     /**
      * Agrega un nuevo comentario.
@@ -161,6 +176,8 @@ public class ComentarioController {
                 comentario.setText(comentarioRequest.getText());
                 comentario.setUsuario(usuario);
                 comentario.setVideojuegos(videojuego);
+                comentario.setFecha(LocalDateTime.now()); 
+
 
                 // Guardar el comentario en la base de datos
                 comentarioService.addComment(comentario);
@@ -210,6 +227,10 @@ public class ComentarioController {
             
             // Actualizar el texto del comentario
             comentarioExistente.setText(comentarioRequest.getText());
+            
+         // Actualizar la fecha a la fecha actual
+            comentarioExistente.setFecha(LocalDateTime.now()); 
+
             
             // Guardar el comentario actualizado en la base de datos
             comentarioService.addComment(comentarioExistente);
