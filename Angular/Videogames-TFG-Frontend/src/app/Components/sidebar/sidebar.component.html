@@ -1,0 +1,125 @@
+<!-- Sidebar para pantallas grandes -->
+<div class="sidebar d-flex flex-column flex-shrink-0 p-3 bg-secondary d-none d-lg-flex fixed-sidebar">
+  <a routerLink="/" class="text-center d-block titulo" style="text-decoration: none;">
+      <div class="topSidebar">
+          <img class="img-fluid" id="logoEviden"
+              src="../../../assets/branding/Logotype_Eviden_RGB_White.png"><br>
+          <h5 class="subtitulo">VIDEOGAME LIBRARY</h5>
+      </div>
+  </a>
+  <hr>
+  <ul class="nav nav-pills flex-column mb-auto">
+      <h3 class="encabezados">GENERAL</h3>
+      <li class="nav-item enlaceSidebar overflowText d-flex align-items-center">
+          <div class="iconHolder me-2">
+              <i class="bi bi-house-fill"></i>
+          </div>
+          <a routerLink="/" class="nav-link text-light">
+              Home
+          </a>
+      </li>
+      <li class="nav-item enlaceSidebar overflowText d-flex align-items-center">
+          <div class="iconHolder me-2">
+              <i class="bi bi-controller"></i>
+          </div>
+          <a routerLink="/my-games" class="nav-link text-light">
+              Mis Juegos
+          </a>
+      </li>
+      <li *ngIf="!isAdmin" class="nav-item enlaceSidebar overflowText d-flex align-items-center">
+          <div class="iconHolder me-2">
+              <i class="bi bi-heart-fill"></i>
+          </div>
+          <a routerLink="/wishlist" class="nav-link text-light">
+              Wishlist
+          </a>
+      </li>
+      <h3 *ngIf="isAdmin" class="encabezados pt-4">ADMINISTRACIÓN</h3>
+      <li *ngIf="isAdmin" class="nav-item enlaceSidebar overflowText d-flex align-items-center">
+          <div class="iconHolder me-2">
+              <i class="bi bi-wrench"></i>
+          </div>
+          <a routerLink="/manage-games" class="nav-link text-light">
+              Gestionar Juegos
+          </a>
+      </li>
+      <li *ngIf="isAdmin" class="nav-item enlaceSidebar overflowText d-flex align-items-center">
+          <div class="iconHolder me-2">
+              <i class="bi bi-people-fill"></i>
+          </div>
+          <a routerLink="/users" class="nav-link text-light">
+              Usuarios
+          </a>
+      </li>
+  </ul>
+  <hr>
+  <div class="userData">
+      <li class="nav-item enlaceBottom overflowText d-flex align-items-center mb-1">
+          <div class="iconHolder2 me-2">
+              <i class="bi bi-gear-wide"></i>
+          </div>
+          <a routerLink="#" class="nav-link text-light">
+              Configuración
+          </a>
+      </li>
+      <li class="nav-item enlaceBottom overflowText d-flex align-items-center">
+          <div class="iconHolder2 me-2">
+              <i class="bi bi-person-fill"></i>
+          </div>
+          <a routerLink="/profile" class="nav-link text-light">
+              Adrian Tellado
+          </a>
+      </li>
+      <li class="nav-item enlaceBottom overflowText d-flex align-items-center">
+          <div class="iconHolder2 me-2">
+              <i class="bi bi-box-arrow-left"></i>
+          </div>
+          <a (click)="logout()" routerLink="/" class="nav-link text-light">
+              Logout
+          </a>
+      </li>
+  </div>
+</div>
+
+<!-- Navbar para pantallas pequeñas -->
+<nav class="navbar navbar-expand-lg navbar-light bg-secondary d-lg-none">
+  <div class="container-fluid">
+      <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center">
+              <img class="img-fluid" id="logoEviden"
+                  src="../../../assets/branding/Logotype_Eviden_RGB_White.png" style="width: 15%; min-width: 15vh;">
+              <a class="navbar-brand text-light ms-2" routerLink="/">VIDEOGAME LIBRARY</a>
+          </div>
+          <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleMobile" aria-controls="navbarToggleMobile" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+      </div>
+      <div class="collapse navbar-collapse" id="navbarToggleMobile">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                  <a class="nav-link active text-light" aria-current="page" routerLink="/">Home</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link text-light" routerLink="/my-games">Mis Juegos</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link text-light" routerLink="/wishlist">Wishlist</a>
+              </li>
+              <li *ngIf="isAdmin" class="nav-item">
+                  <a class="nav-link text-light" routerLink="/manage-games">Gestionar Juegos</a>
+              </li>
+              <li *ngIf="isAdmin" class="nav-item">
+                  <a class="nav-link text-light" routerLink="/users">Usuarios</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link text-light" routerLink="/profile"><i class="bi bi-person-fill"></i> Adrian Tellado</a>
+              </li>
+              <li class="nav-item">
+                  <a (click)="logout()" routerLink="/" class="nav-link text-light">
+                      <i class="bi bi-box-arrow-left"></i> Logout
+                  </a>
+              </li>
+          </ul>
+      </div>
+  </div>
+</nav>

@@ -1,0 +1,134 @@
+hr {
+  border-color: white;
+  border-width: 2px;
+}
+
+.overflowText a {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 60%;
+}
+
+.fixed-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 250px;
+}
+
+.sidebar {
+  height: 100vh;
+  overflow: hidden;
+  box-shadow: -1px 0px 19px 0px rgba(0, 0, 0, 0.34);
+}
+
+.subtitulo {
+  color: white;
+  margin: 0;
+  padding: 0;
+  font-size: 15px;
+  font-weight: 300;
+}
+
+.encabezados {
+  font-size: 12px;
+  font-weight: 620;
+  color: white;
+}
+
+.enlaceSidebar {
+  height: 5vh;
+  background-color: rgba(255, 252, 252, 0.082);
+  border-radius: 10px;
+  margin-bottom: 2vh;
+  position: relative;
+}
+
+.enlaceSidebar a {
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.custom-badge {
+  top: 0;
+  right: 0;
+  transform: translate(20%, -50%);
+  font-size: 0.75rem;
+  padding: 0.5em;
+}
+
+.enlaceBottom {
+  height: 5vh;
+  border-radius: 10px;
+}
+
+.enlaceBottom a {
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.iconHolder {
+  background-color: rgba(255, 255, 255, 0.319);
+  border-radius: 10px;
+  height: 100%;
+  width: 5vh;
+  text-align: center;
+  padding: 5px;
+  font-size: 18px;
+}
+
+.iconHolder i {
+  color: rgba(255, 255, 255, 0.744);
+}
+
+.iconHolder2 {
+  height: 100%;
+  width: 5vh;
+  text-align: center;
+  padding: 5px;
+  font-size: 18px;
+}
+
+.iconHolder2 i {
+  color: rgba(255, 255, 255, 0.744);
+}
+
+.test div {
+  background-color: red;
+  height: 100%;
+  width: 6vh;
+  text-align: center;
+  padding: 5px;
+  font-size: 23px;
+}
+
+.test i {
+  color: rgba(255, 255, 255, 0.744);
+}
+
+/* HOVERS */
+.enlaceSidebar {
+  transition: background-color 0.2s ease;
+}
+
+.enlaceSidebar:hover {
+  background-color: #3c6579;
+}
+
+.enlaceSidebar:hover .iconHolder {
+  background-color: transparent;
+}
+
+.enlaceBottom {
+  transition: background-color 0.3s ease;
+}
+
+.enlaceBottom:hover {
+  background-color: #ffffff19;
+}
+
+.enlaceBottom:hover .iconHolder2 {
+  background-color: transparent;
+}
