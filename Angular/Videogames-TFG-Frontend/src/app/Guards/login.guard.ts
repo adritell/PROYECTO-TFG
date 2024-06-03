@@ -7,11 +7,12 @@ import { Router } from '@angular/router';
 export class LoginGuard {
   constructor( private router: Router) {}
 
-  authServiceisLoggedIn:boolean=false;
+  authServiceisLoggedIn:boolean=true;
 
   canActivate(): boolean {
     if (this.authServiceisLoggedIn) {
       return true;
+
     } else {
       this.router.navigate(['/auth/login']);
       return false;
