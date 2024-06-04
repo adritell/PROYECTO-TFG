@@ -67,7 +67,7 @@
               <i class="bi bi-person-fill"></i>
           </div>
           <a routerLink="/profile" class="nav-link text-light">
-              Adrian Tellado
+            {{ currentUser?.nombreUsuario }}
           </a>
       </li>
       <li class="nav-item enlaceBottom overflowText d-flex align-items-center">
@@ -112,7 +112,7 @@
                   <a class="nav-link text-light" routerLink="/users">Usuarios</a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link text-light" routerLink="/profile"><i class="bi bi-person-fill"></i> Adrian Tellado</a>
+                  <a class="nav-link text-light" routerLink="/profile"><i class="bi bi-person-fill"></i> {{ currentUser?.nombreUsuario }}</a>
               </li>
               <li class="nav-item">
                   <a (click)="logout()" routerLink="/" class="nav-link text-light">

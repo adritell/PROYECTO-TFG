@@ -1,1 +1,62 @@
-<p>register works!</p>
+<div class="container-fluid">
+  <div class="m-4 shadow mb-5 bg-body rounded inner-container">
+      <div class="row m-0">
+
+          <div class="banner-container col-md-7 m-0 p-0 d-flex justify-content-center align-items-center">
+              <div class="circulo bg-primary">
+              </div>
+              <img class="logo-img" src="../../../assets/logo.svg"
+              alt="Logo">
+          </div>
+
+          <div class="form-container col-md-5 p-4 d-flex align-items-center" >
+              <div class="login-form d-flex flex-column align-items-center w-100">
+
+
+                  <h2>DeskReserve</h2>
+
+                  <form [formGroup]="registerForm" (ngSubmit)="onSubmit(registerForm.value)" class="d-flex flex-column w-100 align-items-center">
+                    <div class="input-group d-flex justify-content-center custom-input mt-3">
+                      <input class="loginInput" type="text" name="nombre" formControlName="nombre" placeholder="Introduce tu nombre">
+                      <span class="input-group-text bg-primary text-black justify-content-center" id="basic-addon2">
+                        <i class="fa fa-user"></i>
+                      </span>
+                    </div>
+
+                    <div class="input-group d-flex justify-content-center custom-input mt-3">
+                      <input class="loginInput" type="text" name="apellidos" formControlName="apellidos" placeholder="Introduce tus apellidos">
+                      <span class="input-group-text bg-primary text-black justify-content-center" id="basic-addon2">
+                        <i class="fa fa-user"></i>
+                      </span>
+                    </div>
+
+                    <div class="input-group d-flex justify-content-center custom-input mt-3">
+                      <input class="loginInput" type="text" name="email" formControlName="email" placeholder="Introduce tu email corporativo">
+                      <span class="input-group-text bg-primary text-black justify-content-center" id="basic-addon2">
+                        <i class="fa fa-envelope"></i>
+                      </span>
+                    </div>
+
+                    <div class="input-group d-flex justify-content-center custom-input mt-3">
+                      <input class="loginInput" type="password" name="password" formControlName="password" placeholder="Introduce tu contraseña">
+                      <span class="input-group-text bg-primary text-black justify-content-center" id="basic-addon2">
+                        <i class="fa fa-lock"></i>
+                      </span>
+                    </div>
+
+                    <div class="input-group d-flex justify-content-center custom-input mt-3">
+                      <input class="loginInput" type="password" name="confirmPassword" formControlName="confirmPassword" placeholder="Confirma tu contraseña">
+                      <span class="input-group-text bg-primary text-black justify-content-center" id="basic-addon2">
+                        <i class="fa fa-lock"></i>
+                      </span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-75 mt-4">Registrar</button>
+                    <small class="mt-2">¿Ya tienes una cuenta? <a routerLink="/auth/login">Inicia sesión</a></small>
+                  </form>
+
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

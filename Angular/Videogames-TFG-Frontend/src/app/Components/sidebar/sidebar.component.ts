@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { User } from '../../Interfaces/user';
+import { AuthService } from '../../Services/auth/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -7,25 +9,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SidebarComponent {
 
-
-  logout() {
-    localStorage.removeItem("token");
-  }
-
-  isAdmin=true;
-
-
-
-/*
   currentUser: User | null = null;
   isAdmin: boolean = false; // Valor temporal para isAdmin
 
   constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
-    // Valor temporal para currentUser
-    this.currentUser = { name: 'John', lastname: 'Doe' } as User;
-
     // Suscripción para el usuario actual
     this.authService.currentUser.subscribe({
       next: (user: User | null) => {
@@ -56,5 +45,6 @@ export class SidebarComponent {
 
   logout(): void {
     this.authService.logout();
-  }*/
+  }
+
 }

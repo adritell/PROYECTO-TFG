@@ -4,7 +4,7 @@ import { BrowserModule, provideClientHydration } from '@angular/platform-browser
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SidebarComponent } from './Components/sidebar/sidebar.component';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
 import { TokenInterceptor } from './Interceptors/token.interceptor';
 
 @NgModule({
@@ -18,7 +18,7 @@ import { TokenInterceptor } from './Interceptors/token.interceptor';
     HttpClientModule
   ],
   providers: [
-    provideClientHydration(),
+    provideHttpClient(withFetch()),
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

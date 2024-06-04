@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { LoginGuard } from './Guards/login.guard';
+import { AuthService } from './Services/auth/auth.service';
+import { User } from './Interfaces/user';
 
 
 @Component({
@@ -7,12 +9,16 @@ import { LoginGuard } from './Guards/login.guard';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent {
-  title = 'Videogames-TFG-Frontend';
+export class AppComponent implements OnInit {
+  title = 'Videogames';
+  currentUser: User | null = null;
+  isAdmin: Boolean = false;
+  constructor(private authService: AuthService) {}
 
-  constructor(private loginGuard: LoginGuard) {}
-
-  get isLoggedIn(): boolean {
-    return this.loginGuard.authServiceisLoggedIn;
+  ngOnInit(): void {
+    // Suscribirse a los cambios en el estado de autenticación
+    this.authService.currentUser.subscribe((user: User | null) => {
+      this.currentUser = user;
+    });
   }
 }
