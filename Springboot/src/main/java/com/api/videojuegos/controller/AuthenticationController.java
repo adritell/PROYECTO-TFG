@@ -56,12 +56,30 @@ public class AuthenticationController {
         try {
             // Llamar al servicio de autenticación para registrar el usuario
             authenticationService.signup(request);
-            
-            // Devolver una respuesta exitosa al cliente
-            return ResponseEntity.ok("User registered successfully. Please check your email for confirmation.");
+
+            // Devolver una respuesta exitosa al cliente en formato JSON
+            return ResponseEntity.ok(new ApiResponse("User registered successfully. Please check your email for confirmation."));
         } catch (Exception e) {
             logger.error("Error during signup process.", e);
-            return new ResponseEntity<>("Error during signup process", HttpStatus.INTERNAL_SERVER_ERROR);
+            // Devolver una respuesta de error en formato JSON
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse("Error during signup process"));
+        }
+    }
+
+    // Clase interna para estructurar la respuesta en JSON
+    private static class ApiResponse {
+        private String message;
+
+        public ApiResponse(String message) {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
         }
     }
 
