@@ -28,12 +28,18 @@ public class Videojuegos {
 
     @Column(name = "anio_publicacion", nullable = false)
     private int anioPublicacion;
+    
+    @Column(name="precio", nullable=false)
+    private double precio;
 
     @Column(name = "calificacion_por_edades", nullable = false)
     private String calificacionPorEdades;
 
     @Column(nullable = false)
     private String publicador;
+    
+    @Column(name="imagePath", nullable=false)
+    private String imagePath;
 
     @ElementCollection
     @CollectionTable(name = "videojuego_plataforma", joinColumns = @JoinColumn(name = "videojuego_id"))

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import com.api.videojuegos.entity.Videojuegos;
@@ -59,5 +60,11 @@ public class VideojuegoServiceImpl implements VideojuegosService {
     @Override
     public List<Videojuegos> searchVideojuegos(String passwd) {
         return videojuegosRepository.findByNombreContainingIgnoreCase(passwd);
+    }
+    
+    
+    // Nuevo método para obtener videojuegos paginados
+    public Page<Videojuegos> getVideojuegosPaginados(Pageable pageable) {
+        return videojuegosRepository.findAll(pageable);
     }
 }

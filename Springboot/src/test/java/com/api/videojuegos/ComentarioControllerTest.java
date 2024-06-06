@@ -73,7 +73,7 @@ class ComentarioControllerTest {
         ComentarioResponse expectedResponse = new ComentarioResponse(
             mockComentario.getId(),
             mockComentario.getText(),
-            new UsuarioResponse(mockComentario.getUsuario().getFirstName(), mockComentario.getUsuario().getEmail()),
+            new UsuarioResponse(mockComentario.getUsuario().getId(),mockComentario.getUsuario().getFirstName(), mockComentario.getUsuario().getEmail()),
             mockComentario.getFecha()
         );
         assertEquals(expectedResponse, response.getBody());

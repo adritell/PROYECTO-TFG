@@ -79,7 +79,7 @@ public class JwtServiceImpl implements JwtService {
     
     @Override
     public String createToken(Usuario user, Instant expirationInstant, Set<Rol> roles,  String nombreUsuario) {
-        String token = generateToken(user.getEmail(), expirationInstant, roles, user.getFirstName());
+        String token = generateToken(user.getId(),user.getEmail(), expirationInstant, roles, user.getFirstName());
         
         // Crear una nueva entidad Token
         Token tokenEntity = new Token();
@@ -95,11 +95,13 @@ public class JwtServiceImpl implements JwtService {
         return token;
     }
 
-    private String generateToken(String userEmail, Instant expirationInstant, Set<Rol> roles,  String nombreUsuario) {
+    private String generateToken(Long id,String userEmail, Instant expirationInstant, Set<Rol> roles,  String nombreUsuario) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("id", id);
         claims.put("roles", roles.stream().map(Enum::name).collect(Collectors.toList()));
         claims.put("nombreUsuario", nombreUsuario);
         claims.put("expiration", Date.from(expirationInstant));
+        
 
         return Jwts.builder()
                 .setClaims(claims)

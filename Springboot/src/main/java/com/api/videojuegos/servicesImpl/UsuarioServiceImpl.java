@@ -34,7 +34,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public List<UsuarioResponse> getAllUsers() {
         return userRepository.findAll().stream()
-                .map(user -> new UsuarioResponse(user.getFirstName(), user.getEmail()))
+                .map(user -> new UsuarioResponse(user.getId(),user.getFirstName(), user.getEmail()))
                 .collect(Collectors.toList());
     }
     
@@ -47,7 +47,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     public UsuarioResponse findUserById(Long id) {
         Usuario user = userRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return new UsuarioResponse(user.getFirstName(), user.getEmail());
+        return new UsuarioResponse(user.getId() ,user.getFirstName(), user.getEmail());
     }
 
     

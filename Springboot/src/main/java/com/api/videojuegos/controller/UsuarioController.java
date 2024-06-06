@@ -96,6 +96,7 @@ public class UsuarioController {
                 // Si el usuario no es administrador, devolver información reducida
                 List<UsuarioResponse> userResponses = usuarios.stream()
                         .map(user -> new UsuarioResponse(
+                        		user.getId(),
                                 user.getFirstName(),
                                 user.getEmail()
                         ))
@@ -151,6 +152,7 @@ public class UsuarioController {
                 } else {
                     // Si el usuario no es administrador, devolver información reducida
                     UsuarioResponse userResponse = new UsuarioResponse(
+                    		usuario.getId(),
                             usuario.getFirstName(),
                             usuario.getEmail()
                     );
@@ -281,14 +283,16 @@ public class UsuarioController {
 
             List<VideojuegoResponse> videojuegoResponses = videojuegosFavoritos.stream()
                 .map(videojuego -> new VideojuegoResponse(
-                    videojuego.getId(),
-                    videojuego.getNombre(),
-                    videojuego.getGenero(),
-                    videojuego.getDescripcion(),
-                    videojuego.getAnioPublicacion(),
-                    videojuego.getCalificacionPorEdades(),
-                    videojuego.getPublicador(),
-                    videojuego.getPlataformas()
+                		videojuego.getId(),
+                        videojuego.getNombre(),
+                        videojuego.getGenero(),
+                        videojuego.getDescripcion(),
+                        videojuego.getAnioPublicacion(),
+                        videojuego.getPrecio(),
+                        videojuego.getCalificacionPorEdades(),
+                        videojuego.getPublicador(),
+                        videojuego.getImagePath(),
+                        videojuego.getPlataformas()
                 ))
                 .collect(Collectors.toList());
 

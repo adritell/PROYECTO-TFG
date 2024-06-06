@@ -4,6 +4,9 @@ import com.api.videojuegos.entity.Videojuegos;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 public interface VideojuegosService {
     
     List<Videojuegos> getAllVideojuegos();
@@ -18,5 +21,7 @@ public interface VideojuegosService {
     
     List<Videojuegos> searchVideojuegos(String keyword);
     
-    Optional<Videojuegos> findByNombre(String nombre); // Agregado este método
+    Optional<Videojuegos> findByNombre(String nombre);
+    
+    Page<Videojuegos> getVideojuegosPaginados(Pageable pageable);
 }

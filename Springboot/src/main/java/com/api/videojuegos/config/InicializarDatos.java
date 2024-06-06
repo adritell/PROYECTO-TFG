@@ -63,44 +63,6 @@ public class InicializarDatos implements CommandLineRunner {
             usuario3.setPassword(passwordEncoder.encode("password"));
             usuarioRepository.save(usuario3);
 
-            
-         // Crear videojuegos
-         // Videojuego 1
-         Videojuegos videojuegos1 = new Videojuegos();
-         videojuegos1.setNombre("Ratchet and Clank");
-         videojuegos1.setGenero("Plataformas");
-         videojuegos1.setDescripcion("Descripción de Ratchet and Clank");
-         videojuegos1.setAnioPublicacion(2002); // Año de publicación
-         videojuegos1.setCalificacionPorEdades("A"); // Calificación por edades
-         videojuegos1.setPublicador("Publicador de Ratchet and Clank");
-         // Configurar las plataformas
-         videojuegos1.setPlataformas(Arrays.asList("PlayStation", "XBOX", "Nintendo Switch"));
-         videojuegosRepository.save(videojuegos1);
-
-         // Videojuego 2
-         Videojuegos videojuegos2 = new Videojuegos();
-         videojuegos2.setNombre("God of War");
-         videojuegos2.setGenero("Acción");
-         videojuegos2.setDescripcion("Descripción de God of War");
-         videojuegos2.setAnioPublicacion(2005); // Año de publicación
-         videojuegos2.setCalificacionPorEdades("B"); // Calificación por edades
-         videojuegos2.setPublicador("Publicador de God of War");
-         // Configurar las plataformas
-         videojuegos2.setPlataformas(Arrays.asList("PlayStation", "XBOX", "Nintendo Switch"));
-         videojuegosRepository.save(videojuegos2);
-
-         // Videojuego 3
-         Videojuegos videojuegos3 = new Videojuegos();
-         videojuegos3.setNombre("Call of Duty");
-         videojuegos3.setGenero("Disparos");
-         videojuegos3.setDescripcion("Descripción de Call of Duty");
-         videojuegos3.setAnioPublicacion(2003); // Año de publicación
-         videojuegos3.setCalificacionPorEdades("C"); // Calificación por edades
-         videojuegos3.setPublicador("Publicador de Call of Duty");
-         // Configurar las plataformas
-         videojuegos3.setPlataformas(Arrays.asList("PlayStation", "XBOX", "Nintendo Switch"));
-         videojuegosRepository.save(videojuegos3);
-
         } catch (Exception e) {
         	
         }

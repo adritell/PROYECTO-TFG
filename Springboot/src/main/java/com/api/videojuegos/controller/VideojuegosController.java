@@ -2,6 +2,7 @@ package com.api.videojuegos.controller;
 
 import com.api.videojuegos.dto.CalificacionResponse;
 import com.api.videojuegos.dto.ComentarioResponse;
+import org.springframework.data.domain.*;
 import com.api.videojuegos.dto.UsuarioResponse;
 import com.api.videojuegos.dto.VideojuegoResponse;
 import com.api.videojuegos.entity.Calificacion;
@@ -45,10 +46,43 @@ public class VideojuegosController {
     @Autowired
     private UsuarioService usuarioService;
 
+    
+    
+    
+    @GetMapping
+    public ResponseEntity<Page<VideojuegoResponse>> getAllVideojuegos(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Videojuegos> videojuegosPage = videojuegosService.getVideojuegosPaginados(pageable);
+
+            Page<VideojuegoResponse> videojuegoResponsePage = videojuegosPage.map(videojuego -> new VideojuegoResponse(
+                    videojuego.getId(),
+                    videojuego.getNombre(),
+                    videojuego.getGenero(),
+                    videojuego.getDescripcion(),
+                    videojuego.getAnioPublicacion(),
+                    videojuego.getPrecio(),
+                    videojuego.getCalificacionPorEdades(),
+                    videojuego.getPublicador(),
+                    videojuego.getImagePath(),
+                    videojuego.getPlataformas()
+            ));
+
+            return new ResponseEntity<>(videojuegoResponsePage, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while getting paginated videojuegos.", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    
+    
     /**
      * Obtiene la lista de todos los videojuegos.
      * @return Lista de todos los videojuegos.
-     */
+     
     @GetMapping
     public ResponseEntity<List<VideojuegoResponse>> getAllVideojuegos() {
         try {
@@ -72,7 +106,7 @@ public class VideojuegosController {
             logger.error("Error while getting all videojuegos.", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
+    }*/
 
     
     /**
@@ -89,14 +123,16 @@ public class VideojuegosController {
 
                 // Mapear Videojuegos a VideojuegoResponse
                 VideojuegoResponse videojuegoResponse = new VideojuegoResponse(
-                    videojuegos.getId(),
-                    videojuegos.getNombre(),
-                    videojuegos.getGenero(),
-                    videojuegos.getDescripcion(),
-                    videojuegos.getAnioPublicacion(),
-                    videojuegos.getCalificacionPorEdades(),
-                    videojuegos.getPublicador(),
-                    videojuegos.getPlataformas()
+                		videojuegos.getId(),
+                        videojuegos.getNombre(),
+                        videojuegos.getGenero(),
+                        videojuegos.getDescripcion(),
+                        videojuegos.getAnioPublicacion(),
+                        videojuegos.getPrecio(),
+                        videojuegos.getCalificacionPorEdades(),
+                        videojuegos.getPublicador(),
+                        videojuegos.getImagePath(),
+                        videojuegos.getPlataformas()
                 );
 
                 logger.info("Returned videojuegos with ID: {}", id);
@@ -246,7 +282,7 @@ public class VideojuegosController {
                 .map(comentario -> new ComentarioResponse(
                     comentario.getId(),
                     comentario.getText(),
-                    new UsuarioResponse(comentario.getUsuario().getFirstName(), comentario.getUsuario().getEmail()),
+                    new UsuarioResponse(comentario.getUsuario().getId(),comentario.getUsuario().getFirstName(), comentario.getUsuario().getEmail()),
                     comentario.getFecha()
                 ))
                 .collect(Collectors.toList());
@@ -270,7 +306,7 @@ public class VideojuegosController {
             List<Usuario> usuariosFavoritos = usuarioService.getUsuariosFavoritosByVideojuegoId(id);
 
             List<UsuarioResponse> usuarioResponses = usuariosFavoritos.stream()
-                .map(usuario -> new UsuarioResponse(usuario.getFirstName(), usuario.getEmail()))
+                .map(usuario -> new UsuarioResponse(usuario.getId() ,usuario.getFirstName(), usuario.getEmail()))
                 .collect(Collectors.toList());
 
             return new ResponseEntity<>(usuarioResponses, HttpStatus.OK);
