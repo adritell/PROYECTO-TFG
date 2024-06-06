@@ -1,0 +1,81 @@
+<div class="container mt-4 ms-3">
+  <div class="row">
+    <div class="col-12">
+      <h2>Lista de Usuarios</h2>
+      <table class="table table-bordered table-hover mt-3">
+        <thead class="thead-dark">
+          <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th *ngIf="isAdmin()">Apellidos</th>
+            <th *ngIf="isAdmin()">Roles</th>
+            <th *ngIf="isAdmin()">Activo</th>
+            <th *ngIf="isAdmin()">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="isAdmin(); else normalUserTable">
+            <tr *ngFor="let user of adminUsers">
+              <td>{{ user.nombre }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.apellidos }}</td>
+              <td>{{ user.roles.join(', ') }}</td>
+              <td>{{ user.activo ? 'Sí' : 'No' }}</td>
+              <td *ngIf="isAdmin()">
+                <button class="btn btn-sm btn-danger me-2" (click)="eliminarUsuario(user.id)">
+                  <i class="bi bi-trash"></i>
+                </button>
+                <button class="btn btn-sm btn-primary" (click)="editarUsuario(user.id)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+              </td>
+            </tr>
+          </ng-container>
+          <ng-template #normalUserTable>
+            <tr *ngFor="let user of normalUsers">
+              <td>{{ user.nombre }}</td>
+              <td>{{ user.email }}</td>
+            </tr>
+          </ng-template>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="editUserToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <strong class="me-auto">Editar Usuario</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      <form [formGroup]="editUserForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label for="nombre" class="form-label">Nombre</label>
+          <input id="nombre" type="text" class="form-control" formControlName="nombre">
+        </div>
+        <div class="mb-3">
+          <label for="apellidos" class="form-label">Apellidos</label>
+          <input id="apellidos" type="text" class="form-control" formControlName="apellidos">
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input id="email" type="email" class="form-control" formControlName="email">
+        </div>
+        <div class="mb-3">
+          <label for="roles" class="form-label">Roles</label>
+          <select id="roles" class="form-select" formControlName="roles">
+            <option value="ROLE_USER">ROLE_USER</option>
+            <option value="ROLE_ADMIN">ROLE_ADMIN</option>
+          </select>
+        </div>
+        <div class="mb-3 form-check">
+          <input id="activo" type="checkbox" class="form-check-input" formControlName="activo">
+          <label for="activo" class="form-check-label">Activo</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+      </form>
+    </div>
+  </div>
+</div>

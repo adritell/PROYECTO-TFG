@@ -17,6 +17,7 @@ export class AuthService {
 
   currentUser: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
   isAdmin: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  id: number | null = null;
 
   constructor(private http: HttpClient, private router: Router) {
     this.initializeCurrentUser();
@@ -72,16 +73,36 @@ registrarUsuario(datosRegistro: any): Observable<any> {
   decodeToken(token: string): void {
     const tokenDecoded = jwtDecode<TokenPayload>(token);
     if (tokenDecoded) {
+      console.log(tokenDecoded.id);
       const user: User = {
+        id: tokenDecoded.id,
         roles: tokenDecoded.roles,
         expiration: tokenDecoded.expiration,
         nombreUsuario: tokenDecoded.nombreUsuario,
         sub: tokenDecoded.sub
       };
       this.currentUser.next(user);
-      this.isAdmin.next(user.roles.includes('ADMIN'));
+      this.isAdmin.next(user.roles.includes('ROLE_ADMIN'));
+      this.id = tokenDecoded.id;
     } else {
       this.clearCurrentUser();
     }
   }
+
+
+  //Metodo para comprobar si el usuario es administrador o no
+  isAdminUser(): boolean {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const tokenDecoded = jwtDecode<TokenPayload>(token);
+      return tokenDecoded.roles.includes('ROLE_ADMIN');
+    }
+    return false;
+  }
+
+  //Metodo para obtener el id del usuario actual
+  getCurrentUserId(): number | null {
+    return this.id;
+  }
+
 }

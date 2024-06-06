@@ -1,0 +1,21 @@
+.table {
+  thead {
+    background-color: #343a40;
+    color: white;
+  }
+
+  th, td {
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  tr:hover {
+    background-color: #f1f1f1;
+  }
+
+  .btn {
+    i {
+      font-size: 1.2rem;
+    }
+  }
+}
