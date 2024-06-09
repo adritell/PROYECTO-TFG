@@ -3,6 +3,12 @@ import { VideojuegoDTO } from '../../../../Interfaces/DTO/VideojuegoDTO';
 import { VideogamesService } from '../../../../Services/videogames/videogames.service';
 import { PaginatedResponse } from '../../../../Interfaces/DTO/PaginatedResponse';
 import { AuthService } from '../../../../Services/auth/auth.service';
+import { Observable, catchError, map, tap, throwError } from 'rxjs';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import Swal from 'sweetalert2';
+
+declare var bootstrap: any;
+
 
 @Component({
   selector: 'app-home',
@@ -12,382 +18,429 @@ import { AuthService } from '../../../../Services/auth/auth.service';
 export class HomeComponent implements OnInit{
 
 
-
-  games: VideojuegoDTO[] = [];
   currentPage: number = 0;
   pageSize: number = 6;
   totalElements: number = 0;
+  totalPages: number = 0;
+  editGameForm: FormGroup;
+  addGameForm: FormGroup;
+  currentGameId: number | null = null;
+  videogames$: Observable<VideojuegoDTO[]>;
 
-  constructor(private videogamesService: VideogamesService, private authService:AuthService) {}
 
-  ngOnInit(): void {
-    this.loadGames();
+  constructor(private fb: FormBuilder, private videogamesService: VideogamesService, private authService: AuthService) {
+    this.videogames$ = this.videogamesService.videogames$;
   }
 
-  loadGames(): void {
-    this.videogamesService.getVideojuegosPaginados(this.currentPage, this.pageSize).subscribe(
-      (response: PaginatedResponse<VideojuegoDTO>) => {
-        this.games = response.content;
+  ngOnInit(): void {
+    this.loadVideogames();
+
+
+    this.addGameForm = this.fb.group({
+      nombre: ['', Validators.required],
+      genero: ['', Validators.required],
+      descripcion: ['', Validators.required],
+      anioPublicacion: [0, Validators.required],
+      precio: [0, Validators.required],
+      calificacionPorEdades: ['', Validators.required],
+      publicador: ['', Validators.required],
+      imagePath: ['', Validators.required]
+    });
+
+    this.editGameForm = this.fb.group({
+      nombre: ['', Validators.required],
+      genero: ['', Validators.required],
+      descripcion: ['', Validators.required],
+      anioPublicacion: [0, Validators.required],
+      precio: [0, Validators.required],
+      calificacionPorEdades: ['', Validators.required],
+      publicador: ['', Validators.required],
+      imagePath: ['', Validators.required]
+    });
+  }
+
+  loadVideogames(): void {
+    this.videogames$ = this.videogamesService.getVideojuegosPaginados(this.currentPage, this.pageSize).pipe(
+      tap(response => {
         this.totalElements = response.totalElements;
-      },
-      (error) => {
-        console.error('Error fetching games', error);
-      }
+        this.totalPages = response.totalPages;
+      }),
+      map(response => {
+        if (Array.isArray(response.content)) {
+          return response.content;
+        } else {
+          console.error('Expected an array of videogames in response content but got', response.content);
+          return [];
+        }
+      }),
+      catchError(error => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error fetching games',
+          text: error.message
+        });
+        return throwError(error);
+      })
     );
   }
 
   nextPage(): void {
     if ((this.currentPage + 1) * this.pageSize < this.totalElements) {
       this.currentPage++;
-      this.loadGames();
+      this.loadVideogames();
     }
   }
 
   previousPage(): void {
     if (this.currentPage > 0) {
       this.currentPage--;
-      this.loadGames();
+      this.loadVideogames();
     }
   }
 
-  navigateToGame(game: any): void {
-    console.log('Navigating to game:', game.nombre);
+  // Calcula las páginas a mostrar en el paginado
+  getDisplayedPages(): number[] {
+    // Número total de páginas a mostrar en la paginación
+    const totalPagesToShow = 5;
+    const pages: number[] = [];
+
+    if (this.totalPages <= totalPagesToShow) {
+      // Mostrar todas las páginas si el total de páginas es menor o igual al número de páginas a mostrar
+      for (let i = 0; i < this.totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Siempre mostrar la primera página
+      pages.push(0);
+
+      // Mostrar puntos suspensivos si la página actual es mayor que 2 se añade -1 para indicar que hay
+      //páginas antes de la actual que no se están mostrando explícitamente
+      if (this.currentPage > 2) {
+        pages.push(-1);
+      }
+
+      // Calcular el índice de la página de inicio y de fin a mostrar
+      const startPage = Math.max(1, this.currentPage - 1);
+      const endPage = Math.min(this.totalPages - 2, this.currentPage + 1);
+
+      // Agregar las páginas calculadas al array
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+
+      // Mostrar puntos suspensivos si la página actual es menor que totalPages - 3 se añade -1 para indicar
+      //que hay páginas después de las mostradas que no se están mostrando explícitamente.
+      if (this.currentPage < this.totalPages - 3) {
+        pages.push(-1);
+      }
+
+      // Siempre mostrar la última página
+      pages.push(this.totalPages - 1);
+    }
+
+    return pages;
   }
 
+
+
+
+
+  goToPage(page: number): void {
+    this.currentPage = page;
+    this.loadVideogames();
+  }
+
+
+  navigateToGame(game: VideojuegoDTO): void {
+    console.log('Navigating to game:', game.id);
+  }
 
   isAdmin(): boolean {
     return this.authService.isAdminUser();
   }
+
+  deleteGame(gameId: number): void {
+    const token = this.authService.getToken();
+    this.videogamesService.deleteVideojuego(gameId, token).subscribe(
+      () => {
+        console.log('Game deleted successfully');
+        this.loadVideogames();
+      },
+      error => {
+        console.error('Error deleting game', error);
+      }
+    );
   }
+
+  editarVideojuego(id: number): void {
+    this.currentGameId = id;
+    this.videogamesService.getGameById(id).subscribe(
+      game => {
+        if (game) {
+          this.editGameForm.patchValue({
+            nombre: game.nombre,
+            genero: game.genero,
+            descripcion: game.descripcion,
+            anioPublicacion: game.anioPublicacion,
+            precio: game.precio,
+            calificacionPorEdades: game.calificacionPorEdades,
+            publicador: game.publicador,
+            imagePath: game.imagePath
+          });
+          const toastElement = document.getElementById('editGameToast');
+          if (toastElement) {
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+          }
+        }
+      },
+      error => {
+        console.error('Error fetching the game', error);
+        Swal.fire('Error', 'No se pudo cargar el videojuego', 'error');
+      }
+    );
+  }
+
+  onSubmitGame(): void {
+    if (this.editGameForm.valid) {
+      const updatedGame = this.editGameForm.value;
+      if (this.currentGameId !== null) {
+        this.videogamesService.updateVideojuego(this.currentGameId, updatedGame, this.authService.getToken()).subscribe(
+          response => {
+            Swal.fire('Actualizado', 'Videojuego actualizado correctamente', 'success');
+            const toastElement = document.getElementById('editGameToast');
+            if (toastElement) {
+              const toast = new bootstrap.Toast(toastElement);
+              toast.hide();
+            }
+            this.loadVideogames();
+          },
+          error => {
+            console.error('Error updating the game', error);
+            Swal.fire('Error', 'No se pudo actualizar el videojuego', 'error');
+          }
+        );
+      }
+    }
+  }
+
+
+
+
+  //Método para mostrar el formulario de añadir un videojuego
+  mostrarFormularioAniadir(): void {
+    this.addGameForm.reset();
+    const toastElement = document.getElementById('addGameToast');
+    if (toastElement) {
+      const toast = new bootstrap.Toast(toastElement);
+      toast.show();
+    }
+  }
+
+
+  //Método para añadir un videojuego
+  onSubmitAddGame(): void {
+    if (this.addGameForm.valid) {
+      const newGame = this.addGameForm.value;
+      this.videogamesService.guardarVideojuego(newGame, this.authService.getToken()).subscribe(
+        response => {
+          Swal.fire('Añadido', 'Videojuego añadido correctamente', 'success');
+          const toastElement = document.getElementById('addGameToast');
+          if (toastElement) {
+            const toast = new bootstrap.Toast(toastElement);
+            toast.hide();
+          }
+          this.loadVideogames();
+        },
+        error => {
+          console.error('Error adding the game', error);
+          Swal.fire('Error', 'No se pudo añadir el videojuego', 'error');
+        }
+      );
+    }
+  }
+
+
+
+
+  addWishList(event: Event, game: VideojuegoDTO): void {
+    event.stopPropagation();
+    const target = event.target as HTMLElement;
+    const icon = target.closest('.btn')?.querySelector('i');
+    if (icon) {
+      icon.classList.toggle('text-danger');
+      // Aquí es donde se implementará la lógica para añadir o quitar el juego de la lista de deseos del usuario
+      if (icon.classList.contains('text-danger')) {
+        console.log(`Añadir a la lista de deseos: ${game.nombre}`);
+      } else {
+        console.log(`Quitar de la lista de deseos: ${game.nombre}`);
+      }
+    }
+  }
+}
 
 
   /*games = [
     [
+    {
+    "id": 28,
+    "nombre": "Sonic Mania",
+    "genero": "Platformer",
+    "descripcion": "A 2D platformer featuring Sonic the Hedgehog.",
+    "anio_Publicacion": 2017,
+    "precio": 19.99,
+    "calificacion_por_edades": "Everyone",
+    "publicador": "Sega",
+    "plataformas": ["PlayStation 4", "Xbox One", "Nintendo Switch", "Microsoft Windows"],
+    "imagePath": "../../../../../assets/games/sonic_mania.jpg"
+  },
   {
-    "id": 1,
-    "nombre": "Elden Ring",
-    "genero": "Action RPG",
-    "descripcion": "A fantasy action RPG.",
+    "id": 29,
+    "nombre": "Spyro Reignited Trilogy",
+    "genero": "Platformer",
+    "descripcion": "A collection of remastered Spyro games.",
+    "anio_Publicacion": 2018,
+    "precio": 39.99,
+    "calificacion_por_edades": "Everyone 10+",
+    "publicador": "Activision",
+    "plataformas": ["PlayStation 4", "Xbox One", "Nintendo Switch", "Microsoft Windows"],
+    "imagePath": "../../../../../assets/games/spyro_reignited_trilogy.jpg"
+  },
+  {
+    "id": 29,
+    "nombre": "Kirby's and the Forgotten Island",
+    "genero": "Platformer",
+    "descripcion": "A platformer game with a unique yarn-based art style.",
+    "anio_Publicacion": 2022,
+    "precio": 39.99,
+    "calificacion_por_edades": "Everyone",
+    "publicador": "Nintendo",
+    "plataformas": ["Nintendo Switch"],
+    "imagePath": "../../../../../assets/games/kirby_y_la_tierra_olvidada.jpg"
+  },
+
+  {
+    "id": 30,
+    "nombre": "Sonic Forces",
+    "genero": "Platformer",
+    "descripcion": "A platformer game where Sonic and his friends fight against Dr. Eggman.",
+    "anio_Publicacion": 2017,
+    "precio": 39.99,
+    "calificacion_por_edades": "Everyone 10+",
+    "publicador": "Sega",
+    "plataformas": ["PlayStation 4", "Xbox One", "Nintendo Switch", "Microsoft Windows"],
+    "imagePath": "../../../../../assets/games/sonic_forces.jpg"
+  }
+
+  {
+    "id": 30,
+    "nombre": "Sonic Frontiers",
+    "genero": "Open-world Adventure",
+    "descripcion": "An open-world adventure game starring Sonic the Hedgehog.",
     "anio_Publicacion": 2022,
     "precio": 59.99,
-    "calificacion_por_edades": "Mature",
-    "publicador": "FromSoftware",
-    "plataformas": ["PlayStation 4", "PlayStation 5", "Xbox One", "Xbox Series X/S", "PC"],
-    "imagePath": "../../../../../assets/games/elden_ring.jpeg"
+    "calificacion_por_edades": "Everyone 10+",
+    "publicador": "Sega",
+    "plataformas": ["PlayStation 4", "PlayStation 5", "Xbox One", "Xbox Series X/S", "Nintendo Switch", "Microsoft Windows"],
+    "imagePath": "../../../../../assets/games/sonic_frontiers.jpg"
   },
+
   {
-    "id": 2,
-    "nombre": "Diablo IV",
-    "genero": "Action RPG",
-    "descripcion": "An action RPG.",
+    "id": 31,
+    "nombre": "Super Smash Bros. Ultimate",
+    "genero": "Fighting",
+    "descripcion": "A crossover fighting game featuring various Nintendo characters.",
+    "anio_Publicacion": 2018,
+    "precio": 59.99,
+    "calificacion_por_edades": "Everyone 10+",
+    "publicador": "Nintendo",
+    "plataformas": ["Nintendo Switch"],
+    "imagePath": "../../../../../assets/games/super_smash_bros_ultimate.jpg"
+  },
+
+  {
+    "id": 32,
+    "nombre": "FIFA 24",
+    "genero": "Sports",
+    "descripcion": "The latest installment in the FIFA series featuring realistic football gameplay.",
     "anio_Publicacion": 2023,
-    "precio": 34.99,
-    "calificacion_por_edades": "Mature",
-    "publicador": "Blizzard Entertainment",
-    "plataformas": ["PlayStation 4", "PlayStation 5", "Xbox One", "Xbox Series X/S", "PC"],
-    "imagePath": "../../../../../assets/games/diablo.jpg"
+    "precio": 59.99,
+    "calificacion_por_edades": "Everyone",
+    "publicador": "Electronic Arts",
+    "plataformas": ["PlayStation 5", "Xbox Series X/S", "PC"],
+    "imagePath": "../../../../../assets/games/fifa24.jpg"
   },
   {
-    "id": 3,
-    "nombre": "DOTA 2",
-    "genero": "MOBA",
-    "descripcion": "A multiplayer online battle arena game.",
-    "anio_Publicacion": 2013,
-    "precio": 0,
-    "calificacion_por_edades": "Teen",
-    "publicador": "Valve Corporation",
-    "plataformas": ["PC"],
-    "imagePath": "../../../../../assets/games/dota2.jpg"
-  },
-  {
-    "id": 4,
-    "nombre": "The Witcher 3: Wild Hunt",
-    "genero": "Action RPG",
-    "descripcion": "An open-world action RPG.",
-    "anio_Publicacion": 2015,
+    "id": 33,
+    "nombre": "Call of Duty: Modern Warfare 3",
+    "genero": "First-person Shooter",
+    "descripcion": "An intense first-person shooter set in a modern warfare setting.",
+    "anio_Publicacion": 2011,
     "precio": 29.99,
     "calificacion_por_edades": "Mature",
-    "publicador": "CD Projekt",
-    "plataformas": ["PlayStation 4", "PlayStation 5", "Xbox One", "Xbox Series X/S", "Nintendo Switch", "PC"],
-    "imagePath": "../../../../../assets/games/The-Witcher-3-Wild-Hunt.jpg"
-  },
+    "publicador": "Activision",
+    "plataformas": ["PlayStation 3", "Xbox 360", "PC"],
+    "imagePath": "../../../../../assets/games/call_of_dutty_mw3.jpg"
+  }
+
   {
-    "id": 5,
-    "nombre": "Cyberpunk 2077",
-    "genero": "Open-world RPG",
-    "descripcion": "A futuristic open-world RPG.",
-    "anio_Publicacion": 2020,
-    "precio": 49.99,
+    "id": 34,
+    "nombre": "Titanfall 2",
+    "genero": "First-person Shooter",
+    "descripcion": "A fast-paced first-person shooter with parkour elements.",
+    "anio_Publicacion": 2016,
+    "precio": 19.99,
     "calificacion_por_edades": "Mature",
-    "publicador": "CD Projekt",
-    "plataformas": ["PlayStation 4", "PlayStation 5", "Xbox One", "Xbox Series X/S", "PC"],
-    "imagePath": "../../../../../assets/games/cyberpunk.jpg"
+    "publicador": "Electronic Arts",
+    "plataformas": ["PlayStation 4", "Xbox One", "Microsoft Windows"],
+    "imagePath": "../../../../../assets/games/titanfall2.jpg"
   },
+
+
   {
-    "id": 6,
-    "nombre": "Hades",
-    "genero": "Roguelike",
-    "descripcion": "A roguelike dungeon crawler.",
-    "anio_Publicacion": 2020,
-    "precio": 24.99,
-    "calificacion_por_edades": "Teen",
-    "publicador": "Supergiant Games",
-    "plataformas": ["Nintendo Switch", "PC"],
-    "imagePath": "../../../../../assets/games/hades.png"
-  },
-  {
-    "id": 7,
-    "nombre": "Among Us",
-    "genero": "Social Deduction",
-    "descripcion": "A multiplayer social deduction game.",
-    "anio_Publicacion": 2018,
-    "precio": 4.99,
-    "calificacion_por_edades": "Everyone 10+",
-    "publicador": "Innersloth",
-    "plataformas": ["Android", "iOS", "PC"],
-    "imagePath": "../../../../../assets/games/among_us.jpeg"
-  },
-  {
-    "id": 8,
-    "nombre": "Assassin's Creed Valhalla",
-    "genero": "Action-Adventure",
-    "descripcion": "An open-world action-adventure game.",
-    "anio_Publicacion": 2020,
-    "precio": 59.99,
-    "calificacion_por_edades": "Mature",
-    "publicador": "Ubisoft",
-    "plataformas": ["PlayStation 4", "PlayStation 5", "Xbox One", "Xbox Series X/S", "PC"],
-    "imagePath": "../../../../../assets/games/ac_valhalla.jpg"
-  },
-  {
-    "id": 9,
-    "nombre": "Minecraft",
-    "genero": "Sandbox",
-    "descripcion": "A sandbox game.",
-    "anio_Publicacion": 2011,
-    "precio": 26.95,
-    "calificacion_por_edades": "Everyone 10+",
-    "publicador": "Mojang Studios",
-    "plataformas": ["PlayStation 4", "Xbox One", "Nintendo Switch", "PC", "Mobile"],
-    "imagePath": "../../../../../assets/games/minecraft.jpg"
-  },
-  {
-    "id": 10,
-    "nombre": "Fortnite",
-    "genero": "Battle Royale",
-    "descripcion": "A battle royale game.",
+    "id": 35,
+    "nombre": "Destiny 2",
+    "genero": "First-person Shooter",
+    "descripcion": "An online multiplayer first-person shooter with RPG elements.",
     "anio_Publicacion": 2017,
     "precio": 0,
     "calificacion_por_edades": "Teen",
-    "publicador": "Epic Games",
-    "plataformas": ["PlayStation 4", "PlayStation 5", "Xbox One", "Xbox Series X/S", "Nintendo Switch", "PC", "Mobile"],
-    "imagePath": "../../../../../assets/games/fortnite.jpg"
+    "publicador": "Bungie",
+    "plataformas": ["PlayStation 4", "Xbox One", "Microsoft Windows"],
+    "imagePath": "../../../../../assets/games/destiny2.jpg"
   },
-  {
-    "id": 11,
-    "nombre": "League of Legends",
-    "genero": "MOBA",
-    "descripcion": "A multiplayer online battle arena game.",
-    "anio_Publicacion": 2009,
-    "precio": 0,
-    "calificacion_por_edades": "Teen",
-    "publicador": "Riot Games",
-    "plataformas": ["PC"],
-    "imagePath": "../../../../../assets/games/league_of_legends.jpg"
-  },
-  {
-    "id": 12,
-    "nombre": "Valorant",
-    "genero": "First-person Shooter",
-    "descripcion": "A tactical first-person shooter.",
-    "anio_Publicacion": 2020,
-    "precio": 0,
-    "calificacion_por_edades": "Teen",
-    "publicador": "Riot Games",
-    "plataformas": ["PC"],
-    "imagePath": "../../../../../assets/games/valorant.jpg"
-  },
-    {
-        "id": 13,
-        "nombre": "Final Fantasy VII Remake",
-        "genero": "RPG",
-        "descripcion": "A remake of the classic RPG.",
-        "anio_Publicacion": 2020,
-        "precio": 59.99,
-        "calificacion_por_edades": "16+",
-        "publicador": "Square Enix",
-        "plataformas": ["PlayStation 4", "PlayStation 5", "Microsoft Windows"],
-        "imagePath": "../../../../../assets/games/ffvii_remake.jpg"
-    },
-    {
-        "id": 14,
-        "nombre": "God of War",
-        "genero": "Action-adventure",
-        "descripcion": "An action-adventure game based on mythology.",
-        "anio_Publicacion": 2018,
-        "precio": 39.99,
-        "calificacion_por_edades": "18+",
-        "publicador": "Sony Interactive Entertainment",
-        "plataformas": ["PlayStation 4", "Microsoft Windows"],
-        "imagePath": "../../../../../assets/games/gow.jpg"
-    },
-    {
-        "id": 15,
-        "nombre": "Ratchet and Clank",
-        "genero": "Action-platformer",
-        "descripcion": "An action-platformer game.",
-        "anio_Publicacion": 2016,
-        "precio": 29.99,
-        "calificacion_por_edades": "10+",
-        "publicador": "Sony Interactive Entertainment",
-        "plataformas": ["PlayStation 4"],
-        "imagePath": "../../../../../assets/games/ratchet_and_clank.jpg"
-    },
-    {
-        "id": 16,
-        "nombre": "The Legend of Zelda: Breath of the Wild",
-        "genero": "Action-adventure",
-        "descripcion": "An open-world action-adventure game.",
-        "anio_Publicacion": 2017,
-        "precio": 59.99,
-        "calificacion_por_edades": "12+",
-        "publicador": "Nintendo",
-        "plataformas": ["Nintendo Switch", "Wii U"],
-        "imagePath": "../../../../../assets/games/BOTW.jpg"
-    },
-    {
-        "id": 17,
-        "nombre": "Super Mario Odyssey",
-        "genero": "Platform",
-        "descripcion": "A platform game.",
-        "anio_Publicacion": 2017,
-        "precio": 49.99,
-        "calificacion_por_edades": "7+",
-        "publicador": "Nintendo",
-        "plataformas": ["Nintendo Switch"],
-        "imagePath": "../../../../../assets/games/super_mario_odyssey.jpg"
-    },
-    {
-        "id": 18,
-        "nombre": "Red Dead Redemption 2",
-        "genero": "Action-adventure",
-        "descripcion": "An open-world action-adventure game set in the Wild West.",
-        "anio_Publicacion": 2018,
-        "precio": 59.99,
-        "calificacion_por_edades": "18+",
-        "publicador": "Rockstar Games",
-        "plataformas": ["PlayStation 4", "Xbox One", "Microsoft Windows", "Stadia"],
-        "imagePath": "../../../../../assets/games/rdr2.jpg"
-    }
 
-    {
-        "id": 19,
-        "nombre": "Splatoon 3",
-        "genero": "Third-person shooter",
-        "descripcion": "A colorful and fast-paced multiplayer shooter.",
-        "anio_Publicacion": 2022,
-        "precio": 59.99,
-        "calificacion_por_edades": "10+",
-        "publicador": "Nintendo",
-        "plataformas": ["Nintendo Switch"],
-        "imagePath": "../../../../../assets/games/splatoon_3.jpg"
-    },
-    {
-        "id": 20,
-        "nombre": "Animal Crossing: New Horizons",
-        "genero": "Simulation",
-        "descripcion": "A social simulation game where you build and manage your island.",
-        "anio_Publicacion": 2020,
-        "precio": 59.99,
-        "calificacion_por_edades": "3+",
-        "publicador": "Nintendo",
-        "plataformas": ["Nintendo Switch"],
-        "imagePath": "../../../../../assets/games/animal_crossing.jpg"
-    },
-    {
-        "id": 21,
-        "nombre": "Mario Kart 8 Deluxe",
-        "genero": "Racing",
-        "descripcion": "A kart racing game with various characters and tracks.",
-        "anio_Publicacion": 2017,
-        "precio": 59.99,
-        "calificacion_por_edades": "3+",
-        "publicador": "Nintendo",
-        "plataformas": ["Nintendo Switch"],
-        "imagePath": "../../../../../assets/games/mario_kart_8.jpg"
-    },
-    {
-        "id": 22,
-        "nombre": "Hollow Knight",
-        "genero": "Metroidvania",
-        "descripcion": "An action-adventure game with exploration and platforming elements.",
-        "anio_Publicacion": 2017,
-        "precio": 14.99,
-        "calificacion_por_edades": "10+",
-        "publicador": "Team Cherry",
-        "plataformas": ["Microsoft Windows", "macOS", "Linux", "PlayStation 4", "Xbox One", "Nintendo Switch"],
-        "imagePath": "../../../../../assets/games/hollow_knight.jpg"
-    },
-    {
-        "id": 23,
-        "nombre": "Stardew Valley",
-        "genero": "Simulation",
-        "descripcion": "A farming simulation game with RPG elements.",
-        "anio_Publicacion": 2016,
-        "precio": 14.99,
-        "calificacion_por_edades": "7+",
-        "publicador": "ConcernedApe",
-        "plataformas": ["Microsoft Windows", "macOS", "Linux", "PlayStation 4", "Xbox One", "Nintendo Switch", "iOS", "Android"],
-        "imagePath": "../../../../../assets/games/stardew_valley.jpg"
-    },
-    {
-        "id": 24,
-        "nombre": "Sekiro: Shadows Die Twice",
-        "genero": "Action-adventure",
-        "descripcion": "A challenging action-adventure game set in a fictional Japan.",
-        "anio_Publicacion": 2019,
-        "precio": 59.99,
-        "calificacion_por_edades": "18+",
-        "publicador": "Activision",
-        "plataformas": ["PlayStation 4", "Xbox One", "Microsoft Windows", "Stadia"],
-        "imagePath": "../../../../../assets/games/sekiro.jpg"
-    },
-    {
-        "id": 25,
-        "nombre": "Celeste",
-        "genero": "Platformer",
-        "descripcion": "A challenging platformer game with a touching story.",
-        "anio_Publicacion": 2018,
-        "precio": 19.99,
-        "calificacion_por_edades": "10+",
-        "publicador": "Matt Makes Games",
-        "plataformas": ["Microsoft Windows", "macOS", "Linux", "PlayStation 4", "Xbox One", "Nintendo Switch"],
-        "imagePath": "../../../../../assets/games/celeste.jpg"
-    },
-    {
-        "id": 26,
-        "nombre": "Horizon Zero Dawn",
-        "genero": "Action RPG",
-        "descripcion": "An open-world action RPG set in a post-apocalyptic world.",
-        "anio_Publicacion": 2017,
-        "precio": 49.99,
-        "calificacion_por_edades": "16+",
-        "publicador": "Sony Interactive Entertainment",
-        "plataformas": ["PlayStation 4", "Microsoft Windows"],
-        "imagePath": "../../../../../assets/games/horizon_zero_dawn.jpg"
-    },
-    {
-        "id": 27,
-        "nombre": "Persona 5",
-        "genero": "RPG",
-        "descripcion": "A role-playing game where you live a double life as a high school student and a phantom thief.",
-        "anio_Publicacion": 2016,
-        "precio": 59.99,
-        "calificacion_por_edades": "16+",
-        "publicador": "Atlus",
-        "plataformas": ["PlayStation 4", "PlayStation 3"],
-        "imagePath": "../../../../../assets/games/persona_5.jpg"
-    }
+  {
+  "id": 36,
+  "nombre": "Ratchet and Clank: Rift Apart",
+  "genero": "Action-platformer",
+  "descripcion": "An action-platformer featuring dimensional travel and breathtaking graphics.",
+  "anio_Publicacion": 2021,
+  "precio": 69.99,
+  "calificacion_por_edades": "Everyone 10+",
+  "publicador": "Sony Interactive Entertainment",
+  "plataformas": ["PlayStation 5"],
+  "imagePath": "../../../../../assets/games/ratchet_and_clank_rift_apart.jpg"
+  }
+
+  {
+  "id": 37,
+  "nombre": "Spider-Man 2",
+  "genero": "Action-Adventure",
+  "descripcion": "An action-packed adventure featuring the iconic web-slinging superhero.",
+  "anio_Publicacion": 2023,
+  "precio": 59.99,
+  "calificacion_por_edades": "Teen",
+  "publicador": "Insomniac Games",
+  "plataformas": ["PlayStation 5"],
+  "imagePath": "../../../../../assets/games/spiderman_2.jpg"
+}
+
+
+
+
+
+
   ];
 
   constructor() {}

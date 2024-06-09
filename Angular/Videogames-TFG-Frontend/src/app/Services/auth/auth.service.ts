@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { User } from '../../Interfaces/user';
 import { TokenPayload } from '../../Interfaces/tokenPayload';
 import { TokenResponse } from '../../Interfaces/tokenResponse';
@@ -73,7 +72,6 @@ registrarUsuario(datosRegistro: any): Observable<any> {
   decodeToken(token: string): void {
     const tokenDecoded = jwtDecode<TokenPayload>(token);
     if (tokenDecoded) {
-      console.log(tokenDecoded.id);
       const user: User = {
         id: tokenDecoded.id,
         roles: tokenDecoded.roles,
@@ -103,6 +101,10 @@ registrarUsuario(datosRegistro: any): Observable<any> {
   //Metodo para obtener el id del usuario actual
   getCurrentUserId(): number | null {
     return this.id;
+  }
+
+  getToken(): string {
+    return localStorage.getItem('token') || '';
   }
 
 }

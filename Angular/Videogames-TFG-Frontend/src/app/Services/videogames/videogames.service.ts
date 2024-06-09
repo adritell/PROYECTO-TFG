@@ -1,20 +1,119 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { VideojuegoDTO } from '../../Interfaces/DTO/VideojuegoDTO';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, tap, throwError } from 'rxjs';
 import { PaginatedResponse } from '../../Interfaces/DTO/PaginatedResponse';
+import Swal from 'sweetalert2';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class VideogamesService {
 
-  private apiUrl = 'http://localhost:8080/api/v1/videojuegos'; // Asegúrate de que esta URL apunte a tu backend
+  private videogamesSubject: BehaviorSubject<VideojuegoDTO[]> = new BehaviorSubject<VideojuegoDTO[]>([]);
+  public videogames$: Observable<VideojuegoDTO[]> = this.videogamesSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  private apiUrl = 'http://localhost:8080/api/v1/videojuegos';
+
+  constructor(private http: HttpClient, private authService: AuthService) {
+    this.loadVideogames();
+  }
+
+  private loadVideogames() {
+    this.http.get<PaginatedResponse<VideojuegoDTO>>(this.apiUrl).pipe(
+      catchError(error => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error fetching games',
+          text: error.message
+        });
+        return throwError(error);
+      })
+    ).subscribe(response => {
+      if (Array.isArray(response.content)) {
+        this.videogamesSubject.next(response.content);
+      } else {
+        console.error('Expected an array of videogames but got', response);
+      }
+    });
+  }
 
   getVideojuegosPaginados(page: number, size: number): Observable<PaginatedResponse<VideojuegoDTO>> {
-    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
-    return this.http.get<PaginatedResponse<VideojuegoDTO>>(`${this.apiUrl}`, { params });
+    const url = `${this.apiUrl}?page=${page}&size=${size}`;
+    return this.http.get<PaginatedResponse<VideojuegoDTO>>(url, { headers: { 'Content-Type': 'application/json' } }).pipe(
+      map(response => {
+        if (Array.isArray(response.content)) {
+          this.videogamesSubject.next(response.content);
+        } else {
+          console.error('Expected an array of videogames in response content but got', response.content);
+        }
+        return response;
+      }),
+      catchError(error => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error fetching games',
+          text: error.message
+        });
+        return throwError(error);
+      })
+    );
+  }
+
+  updateVideojuego(id: number, game: VideojuegoDTO, token: string): Observable<VideojuegoDTO> {
+    return this.http.put<VideojuegoDTO>(`${this.apiUrl}/${id}`, game, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }).pipe(
+      tap(() => {
+        // Actualiza la lista de videojuegos después de una actualización
+        this.loadVideogames();
+      })
+    );
+  }
+
+  deleteVideojuego(id: number, token: string): Observable<void> {
+    const url = `${this.apiUrl}/${id}`;
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.delete<void>(url, { headers }).pipe(
+      catchError(error => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error deleting game',
+          text: error.message
+        });
+        return throwError(error);
+      })
+    );
+  }
+
+  getGameById(id: number): Observable<VideojuegoDTO> {
+    return this.http.get<VideojuegoDTO>(`${this.apiUrl}/${id}`);
+  }
+
+
+  guardarVideojuego(game: VideojuegoDTO, token: string): Observable<VideojuegoDTO> {
+    return this.http.post<VideojuegoDTO>(this.apiUrl, game, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    }).pipe(
+      tap((nuevoJuego) => {
+        // Añade el nuevo videojuego a la lista actual
+        const currentGames = this.videogamesSubject.value;
+        this.videogamesSubject.next([...currentGames, nuevoJuego]);
+      }),
+      catchError(error => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error adding game',
+          text: error.message
+        });
+        return throwError(error);
+      })
+    );
   }
 }
