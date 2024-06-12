@@ -1,10 +1,11 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { VideojuegoDTO } from '../../Interfaces/DTO/VideojuegoDTO';
-import { BehaviorSubject, Observable, catchError, map, tap, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, tap, throwError, toArray } from 'rxjs';
 import { PaginatedResponse } from '../../Interfaces/DTO/PaginatedResponse';
 import Swal from 'sweetalert2';
 import { AuthService } from '../auth/auth.service';
+import { ComentarioResponse } from '../../Interfaces/DTO/ComentarioResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,9 @@ export class VideogamesService {
 
   private videogamesSubject: BehaviorSubject<VideojuegoDTO[]> = new BehaviorSubject<VideojuegoDTO[]>([]);
   public videogames$: Observable<VideojuegoDTO[]> = this.videogamesSubject.asObservable();
+
+  private filteredVideogamesSubject: BehaviorSubject<VideojuegoDTO[]> = new BehaviorSubject<VideojuegoDTO[]>([]);
+  public filteredVideogames$: Observable<VideojuegoDTO[]> = this.filteredVideogamesSubject.asObservable();
 
   private apiUrl = 'http://localhost:8080/api/v1/videojuegos';
 
@@ -33,6 +37,7 @@ export class VideogamesService {
     ).subscribe(response => {
       if (Array.isArray(response.content)) {
         this.videogamesSubject.next(response.content);
+        this.filteredVideogamesSubject.next(response.content);  // Initialize filtered games with all games
       } else {
         console.error('Expected an array of videogames but got', response);
       }
@@ -45,6 +50,7 @@ export class VideogamesService {
       map(response => {
         if (Array.isArray(response.content)) {
           this.videogamesSubject.next(response.content);
+          this.filteredVideogamesSubject.next(response.content);  // Update filtered games with new data
         } else {
           console.error('Expected an array of videogames in response content but got', response.content);
         }
@@ -59,6 +65,11 @@ export class VideogamesService {
         return throwError(error);
       })
     );
+  }
+
+  //Metodo para obtener todos los juegos sin paginado
+  getAllGames(): Observable<VideojuegoDTO[]> {
+    return this.http.get<VideojuegoDTO[]>(`${this.apiUrl}/todos`);
   }
 
   updateVideojuego(id: number, game: VideojuegoDTO, token: string): Observable<VideojuegoDTO> {
@@ -116,4 +127,33 @@ export class VideogamesService {
       })
     );
   }
+
+
+  //Manejar juegos favoritos
+  getFavorites(userId: number): Observable<VideojuegoDTO[]> {
+    return this.http.get<VideojuegoDTO[]>(`http://localhost:8080/api/v1/usuario/${userId}/videojuegos-favoritos`);
+  }
+
+  addFavorite(userId: number, gameId: number): Observable<void> {
+    return this.http.post<void>(`http://localhost:8080/api/v1/usuario/${userId}/videojuegos-favoritos/${gameId}`, {});
+  }
+
+  removeFavorite(userId: number, gameId: number): Observable<void> {
+    return this.http.delete<void>(`http://localhost:8080/api/v1/usuario/${userId}/videojuegos-favoritos/${gameId}`);
+  }
+
+
+
+  //Manejar comentarios de juegos
+  getComentariosByVideojuego(id: number): Observable<ComentarioResponse[]> {
+    return this.http.get<ComentarioResponse[]>(`${this.apiUrl}/${id}/comentarios`);
+  }
+
 }
+  /*filterData(valueToSearch: string): void {
+    const filteredGames = this.videogamesSubject.value.filter((game) => {
+      return game.nombre.toLowerCase().includes(valueToSearch.toLowerCase());
+    });
+    this.filteredVideogamesSubject.next(filteredGames);
+  }*/
+// }

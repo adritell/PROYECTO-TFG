@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { VideojuegoDTO } from '../../../../Interfaces/DTO/VideojuegoDTO';
 import { VideogamesService } from '../../../../Services/videogames/videogames.service';
-import { PaginatedResponse } from '../../../../Interfaces/DTO/PaginatedResponse';
 import { AuthService } from '../../../../Services/auth/auth.service';
-import { Observable, catchError, map, tap, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, tap, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 declare var bootstrap: any;
 
@@ -26,14 +26,16 @@ export class HomeComponent implements OnInit{
   addGameForm: FormGroup;
   currentGameId: number | null = null;
   videogames$: Observable<VideojuegoDTO[]>;
+  favoritos: BehaviorSubject<VideojuegoDTO[]> = new BehaviorSubject<VideojuegoDTO[]>([]);
 
-
-  constructor(private fb: FormBuilder, private videogamesService: VideogamesService, private authService: AuthService) {
-    this.videogames$ = this.videogamesService.videogames$;
+  constructor(private router:Router ,private fb: FormBuilder, private videogamesService: VideogamesService, private authService: AuthService) {
+    this.videogames$ = this.videogamesService.filteredVideogames$;
   }
 
   ngOnInit(): void {
     this.loadVideogames();
+
+    this.loadFavorites();
 
 
     this.addGameForm = this.fb.group({
@@ -67,6 +69,7 @@ export class HomeComponent implements OnInit{
       }),
       map(response => {
         if (Array.isArray(response.content)) {
+          console.log(response.content);
           return response.content;
         } else {
           console.error('Expected an array of videogames in response content but got', response.content);
@@ -152,7 +155,7 @@ export class HomeComponent implements OnInit{
 
 
   navigateToGame(game: VideojuegoDTO): void {
-    console.log('Navigating to game:', game.id);
+    this.router.navigate(['/detalles-juego', game.id]);
   }
 
   isAdmin(): boolean {
@@ -262,24 +265,41 @@ export class HomeComponent implements OnInit{
 
 
 
+  loadFavorites(): void {
+    const userId = this.authService.getCurrentUserId();
+    if (userId !== null) {
+      this.videogamesService.getFavorites(userId).subscribe(favoritos => {
+        this.favoritos.next(favoritos);
+      });
+    }
+  }
+
+  isFavorite(game: VideojuegoDTO): boolean {
+    return this.favoritos.getValue().some(fav => fav.id === game.id);
+  }
 
   addWishList(event: Event, game: VideojuegoDTO): void {
     event.stopPropagation();
     const target = event.target as HTMLElement;
     const icon = target.closest('.btn')?.querySelector('i');
-    if (icon) {
-      icon.classList.toggle('text-danger');
-      // Aquí es donde se implementará la lógica para añadir o quitar el juego de la lista de deseos del usuario
-      if (icon.classList.contains('text-danger')) {
-        console.log(`Añadir a la lista de deseos: ${game.nombre}`);
+    const userId = this.authService.getCurrentUserId();
+    if (userId !== null && icon) {
+      const isCurrentlyFavorite = this.isFavorite(game);
+      if (!isCurrentlyFavorite) {
+        this.videogamesService.addFavorite(userId, game.id).subscribe(() => {
+          this.favoritos.next([...this.favoritos.getValue(), game]);
+          Swal.fire('Añadido a favoritos', `${game.nombre} ha sido añadido a tus favoritos.`, 'success');
+        });
       } else {
-        console.log(`Quitar de la lista de deseos: ${game.nombre}`);
+        this.videogamesService.removeFavorite(userId, game.id).subscribe(() => {
+          this.favoritos.next(this.favoritos.getValue().filter(fav => fav.id !== game.id));
+          Swal.fire('Eliminado de favoritos', `${game.nombre} ha sido eliminado de tus favoritos.`, 'success');
+        });
       }
     }
   }
+
 }
-
-
   /*games = [
     [
     {

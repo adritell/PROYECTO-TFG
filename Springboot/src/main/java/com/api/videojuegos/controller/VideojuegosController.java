@@ -82,22 +82,24 @@ public class VideojuegosController {
     /**
      * Obtiene la lista de todos los videojuegos.
      * @return Lista de todos los videojuegos.
-     
-    @GetMapping
+     */
+    @GetMapping("/todos")
     public ResponseEntity<List<VideojuegoResponse>> getAllVideojuegos() {
         try {
             List<Videojuegos> videojuegos = videojuegosService.getAllVideojuegos();
 
             List<VideojuegoResponse> videojuegoResponses = videojuegos.stream()
                 .map(videojuego -> new VideojuegoResponse(
-                    videojuego.getId(),
-                    videojuego.getNombre(),
-                    videojuego.getGenero(),
-                    videojuego.getDescripcion(),
-                    videojuego.getAnioPublicacion(),
-                    videojuego.getCalificacionPorEdades(),
-                    videojuego.getPublicador(),
-                    videojuego.getPlataformas()
+                		videojuego.getId(),
+                        videojuego.getNombre(),
+                        videojuego.getGenero(),
+                        videojuego.getDescripcion(),
+                        videojuego.getAnioPublicacion(),
+                        videojuego.getPrecio(),
+                        videojuego.getCalificacionPorEdades(),
+                        videojuego.getPublicador(),
+                        videojuego.getImagePath(),
+                        videojuego.getPlataformas()
                 ))
                 .collect(Collectors.toList());
 
@@ -106,7 +108,7 @@ public class VideojuegosController {
             logger.error("Error while getting all videojuegos.", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }*/
+    }
 
     
     /**

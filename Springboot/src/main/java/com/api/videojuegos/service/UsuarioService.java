@@ -38,5 +38,12 @@ public interface UsuarioService {
     List<Usuario> getUsuariosFavoritosByVideojuegoId(Long videojuegoId);
 
     List<Videojuegos> getVideojuegosFavoritosByUsuarioId(Long usuarioId);
+    
+    
+    void removeVideojuegoFromFavorites(Long usuarioId, Long videojuegoId);
+    
+    Optional<Usuario> findById(Long id);
+
+	void addVideojuegoToFavorites(Long id, Long idVideo);
 
 }

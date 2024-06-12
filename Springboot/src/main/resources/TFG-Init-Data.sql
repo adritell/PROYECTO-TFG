@@ -1,4 +1,4 @@
-use videogames;
+use videogame_library;
 
 INSERT INTO videojuegos (id, nombre, genero, descripcion, anio_Publicacion, precio, calificacion_por_edades, publicador, image_Path) VALUES
 (1, 'Elden Ring', 'Action RPG', 'A fantasy action RPG.', 2022, 59.99, 'Mature', 'FromSoftware', '../../../../../assets/games/elden_ring.jpeg'),
@@ -27,7 +27,7 @@ INSERT INTO videojuegos (id, nombre, genero, descripcion, anio_Publicacion, prec
 (24, 'Sekiro: Shadows Die Twice', 'Action-adventure', 'A challenging action-adventure game set in a fictional Japan.', 2019, 59.99, '18+', 'Activision', '../../../../../assets/games/sekiro.jpg'),
 (25, 'Celeste', 'Platformer', 'A challenging platformer game with a touching story.', 2018, 19.99, '10+', 'Matt Makes Games', '../../../../../assets/games/celeste.jpg'),
 (26, 'Horizon Zero Dawn', 'Action RPG', 'An open-world action RPG set in a post-apocalyptic world.', 2017, 49.99, '16+', 'Sony Interactive Entertainment', '../../../../../assets/games/horizon_zero_dawn.jpg'),
-(27, 'Persona 5', 'RPG', 'A role-playing game where you live a double life as a high school student and a phantom thief.', 2016, 59.99, '16+', 'Atlus', '../../../../../assets/games/persona_5.jpg');
+(27, 'Persona 5', 'RPG', 'A role-playing game where you live a double life as a high school student and a phantom thief.', 2016, 59.99, '16+', 'Atlus', '../../../../../assets/games/persona_5.jpg'),
 (28, 'Sonic Mania', 'Platformer', 'A 2D platformer featuring Sonic the Hedgehog.', 2017, 19.99, 'Everyone', 'Sega', '../../../../../assets/games/sonic_mania.jpg'),
 (29, 'Spyro Reignited Trilogy', 'Platformer', 'A collection of remastered Spyro games.', 2018, 39.99, 'Everyone 10+', 'Activision', '../../../../../assets/games/spyro_reignited_trilogy.jpg'),
 (30, 'Kirby and the Forgotten Land', 'Platformer', 'A platformer game with a unique yarn-based art style.', 2022, 39.99, 'Everyone', 'Nintendo', '../../../../../assets/games/kirby_y_la_tierra_olvidada.jpg'),
@@ -42,198 +42,195 @@ INSERT INTO videojuegos (id, nombre, genero, descripcion, anio_Publicacion, prec
 
 
 -- Asignar a cada juego sus plataformas correspondientes:
+INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES 
 -- Elden Ring
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (1, 'PlayStation 4');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (1, 'PlayStation 5');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (1, 'Xbox One');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (1, 'Xbox Series X/S');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (1, 'PC');
+(1, 'PlayStation 4'),
+(1, 'PlayStation 5'),
+(1, 'Xbox One'),
+(1, 'Xbox Series X/S'),
+(1, 'PC'),
 
 -- Diablo IV
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (2, 'PlayStation 4');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (2, 'PlayStation 5');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (2, 'Xbox One');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (2, 'Xbox Series X/S');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (2, 'PC');
+(2, 'PlayStation 4'),
+(2, 'PlayStation 5'),
+(2, 'Xbox One'),
+(2, 'Xbox Series X/S'),
+(2, 'PC'),
 
 -- DOTA 2
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (3, 'PC');
+(3, 'PC'),
 
 -- The Witcher 3: Wild Hunt
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (4, 'PlayStation 4');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (4, 'PlayStation 5');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (4, 'Xbox One');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (4, 'Xbox Series X/S');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (4, 'Nintendo Switch');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (4, 'PC');
+(4, 'PlayStation 4'),
+(4, 'PlayStation 5'),
+(4, 'Xbox One'),
+(4, 'Xbox Series X/S'),
+(4, 'Nintendo Switch'),
+(4, 'PC'),
 
 -- Cyberpunk 2077
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (5, 'PlayStation 4');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (5, 'PlayStation 5');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (5, 'Xbox One');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (5, 'Xbox Series X/S');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (5, 'PC');
+(5, 'PlayStation 4'),
+(5, 'PlayStation 5'),
+(5, 'Xbox One'),
+(5, 'Xbox Series X/S'),
+(5, 'PC'),
 
 -- Hades
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (6, 'Nintendo Switch');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (6, 'PC');
+(6, 'Nintendo Switch'),
+(6, 'PC'),
 
 -- Among Us
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (7, 'Android');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (7, 'iOS');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (7, 'PC');
+(7, 'Android'),
+(7, 'iOS'),
+(7, 'PC'),
 
 -- Assassin's Creed Valhalla
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (8, 'PlayStation 4');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (8, 'PlayStation 5');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (8, 'Xbox One');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (8, 'Xbox Series X/S');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (8, 'PC');
+(8, 'PlayStation 4'),
+(8, 'PlayStation 5'),
+(8, 'Xbox One'),
+(8, 'Xbox Series X/S'),
+(8, 'PC'),
 
 -- Minecraft
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (9, 'PlayStation 4');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (9, 'Xbox One');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (9, 'Nintendo Switch');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (9, 'PC');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (9, 'Mobile');
+(9, 'PlayStation 4'),
+(9, 'Xbox One'),
+(9, 'Nintendo Switch'),
+(9, 'PC'),
+(9, 'Mobile'),
 
 -- Fortnite
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (10, 'PlayStation 4');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (10, 'PlayStation 5');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (10, 'Xbox One');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (10, 'Xbox Series X/S');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (10, 'Nintendo Switch');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (10, 'PC');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (10, 'Mobile');
-
+(10, 'PlayStation 4'),
+(10, 'PlayStation 5'),
+(10, 'Xbox One'),
+(10, 'Xbox Series X/S'),
+(10, 'Nintendo Switch'),
+(10, 'PC'),
+(10, 'Mobile'),
 
 -- League of Legends
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (11, 'PC');
+(11, 'PC'),
 
 -- Valorant
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (12, 'PC');
+(12, 'PC'),
 
 -- Final Fantasy VII Remake
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (13, 'PlayStation 4');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (13, 'PlayStation 5');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (13, 'Microsoft Windows');
+(13, 'PlayStation 4'),
+(13, 'PlayStation 5'),
+(13, 'Microsoft Windows'),
 
 -- God of War
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (14, 'PlayStation 4');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (14, 'Microsoft Windows');
+(14, 'PlayStation 4'),
+(14, 'Microsoft Windows'),
 
 -- Ratchet and Clank
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (15, 'PlayStation 4');
+(15, 'PlayStation 4'),
 
 -- The Legend of Zelda: Breath of the Wild
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (16, 'Nintendo Switch');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (16, 'Wii U');
+(16, 'Nintendo Switch'),
+(16, 'Wii U'),
 
 -- Super Mario Odyssey
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (17, 'Nintendo Switch');
+(17, 'Nintendo Switch'),
 
 -- Red Dead Redemption 2
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (18, 'PlayStation 4');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (18, 'Xbox One');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (18, 'Microsoft Windows');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (18, 'Stadia');
+(18, 'PlayStation 4'),
+(18, 'Xbox One'),
+(18, 'Microsoft Windows'),
+(18, 'Stadia'),
 
 -- Splatoon 3
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (19, 'Nintendo Switch');
+(19, 'Nintendo Switch'),
 
 -- Animal Crossing: New Horizons
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (20, 'Nintendo Switch');
-
+(20, 'Nintendo Switch'),
 
 -- Mario Kart 8 Deluxe
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (21, 'Nintendo Switch');
+(21, 'Nintendo Switch'),
 
 -- Hollow Knight
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (22, 'Microsoft Windows');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (22, 'macOS');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (22, 'Linux');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (22, 'PlayStation 4');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (22, 'Xbox One');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (22, 'Nintendo Switch');
+(22, 'Microsoft Windows'),
+(22, 'macOS'),
+(22, 'Linux'),
+(22, 'PlayStation 4'),
+(22, 'Xbox One'),
+(22, 'Nintendo Switch'),
 
 -- Stardew Valley
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (23, 'Microsoft Windows');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (23, 'macOS');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (23, 'Linux');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (23, 'PlayStation 4');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (23, 'Xbox One');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (23, 'Nintendo Switch');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (23, 'iOS');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (23, 'Android');
+(23, 'Microsoft Windows'),
+(23, 'macOS'),
+(23, 'Linux'),
+(23, 'PlayStation 4'),
+(23, 'Xbox One'),
+(23, 'Nintendo Switch'),
+(23, 'iOS'),
+(23, 'Android'),
 
 -- Sekiro: Shadows Die Twice
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (24, 'PlayStation 4');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (24, 'Xbox One');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (24, 'Microsoft Windows');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (24, 'Stadia');
+(24, 'PlayStation 4'),
+(24, 'Xbox One'),
+(24, 'Microsoft Windows'),
+(24, 'Stadia'),
 
 -- Celeste
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (25, 'Microsoft Windows');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (25, 'macOS');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (25, 'Linux');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (25, 'PlayStation 4');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (25, 'Xbox One');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (25, 'Nintendo Switch');
+(25, 'Microsoft Windows'),
+(25, 'macOS'),
+(25, 'Linux'),
+(25, 'PlayStation 4'),
+(25, 'Xbox One'),
+(25, 'Nintendo Switch'),
 
 -- Horizon Zero Dawn
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (26, 'PlayStation 4');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (26, 'Microsoft Windows');
+(26, 'PlayStation 4'),
+(26, 'Microsoft Windows'),
 
 -- Persona 5
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (27, 'PlayStation 4');
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (27, 'PlayStation 3');
-
+(27, 'PlayStation 4'),
+(27, 'PlayStation 3'),
 
 -- Sonic Mania
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (28, 'PlayStation 4'),
+(28, 'PlayStation 4'),
 (28, 'Xbox One'),
 (28, 'Nintendo Switch'),
-(28, 'Microsoft Windows');
+(28, 'Microsoft Windows'),
 
 -- Spyro Reignited Trilogy
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (29, 'PlayStation 4'),
+(29, 'PlayStation 4'),
 (29, 'Xbox One'),
 (29, 'Nintendo Switch'),
-(29, 'Microsoft Windows');
+(29, 'Microsoft Windows'),
 
 -- Kirby and the Forgotten Land
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (30, 'Nintendo Switch');
+(30, 'Nintendo Switch'),
 
 -- Sonic Forces
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (31, 'PlayStation 4'),
+(31, 'PlayStation 4'),
 (31, 'Xbox One'),
 (31, 'Nintendo Switch'),
-(31, 'Microsoft Windows');
+(31, 'Microsoft Windows'),
 
 -- Sonic Frontiers
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (32, 'PlayStation 4'),
+(32, 'PlayStation 4'),
 (32, 'PlayStation 5'),
 (32, 'Xbox One'),
 (32, 'Xbox Series X/S'),
 (32, 'Nintendo Switch'),
-(32, 'Microsoft Windows');
+(32, 'Microsoft Windows'),
 
 -- Super Smash Bros. Ultimate
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (33, 'Nintendo Switch');
+(33, 'Nintendo Switch'),
 
 -- FIFA 24
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (34, 'PlayStation 5'),
+(34, 'PlayStation 5'),
 (34, 'Xbox Series X/S'),
-(34, 'PC');
+(34, 'PC'),
 
 -- Call of Duty: Modern Warfare 3
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (35, 'PlayStation 3'),
+(35, 'PlayStation 3'),
 (35, 'Xbox 360'),
-(35, 'PC');
+(35, 'PC'),
 
 -- Ratchet and Clank: Rift Apart
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (36, 'PlayStation 5');
+(36, 'PlayStation 5'),
 
 -- Spider-Man 2
-INSERT INTO videojuego_plataforma (videojuego_id, plataforma) VALUES (37, 'PlayStation 5');
-
+(37, 'PlayStation 5');

@@ -1,6 +1,7 @@
 package com.api.videojuegos.controller;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -31,8 +32,10 @@ import com.api.videojuegos.entity.Videojuegos;
 import com.api.videojuegos.exceptions.BadRequestException;
 import com.api.videojuegos.exceptions.UnauthorizedAccessException;
 import com.api.videojuegos.repository.UsuarioRepository;
+import com.api.videojuegos.repository.VideojuegosRepository;
 import com.api.videojuegos.service.JwtService;
 import com.api.videojuegos.service.UsuarioService;
+import com.api.videojuegos.service.VideojuegosService;
 
 /**
  * Controlador para las operaciones relacionadas con usuarios.
@@ -50,6 +53,12 @@ public class UsuarioController {
     
     @Autowired
     UsuarioRepository userRepository;
+    
+    @Autowired
+    VideojuegosService videojuegoService;
+    
+    @Autowired
+    VideojuegosRepository videojuegoRepository;
     
     @Autowired
     JwtService jwtService;
@@ -300,6 +309,42 @@ public class UsuarioController {
         } catch (Exception e) {
             logger.error("Error while getting videojuegos favoritos for usuario id: " + id, e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    
+    /*Nuevos método para añadir videojuegos de la lista de favoritos de un usuario */
+    @PostMapping("/{id}/videojuegos-favoritos/{idVideojuego}")
+    public ResponseEntity<Void> addVideojuegoToFavorites(@PathVariable Long id, @PathVariable Long idVideojuego) {
+        try {
+            List<Videojuegos> videojuegosFavoritos = usuarioService.getVideojuegosFavoritosByUsuarioId(id);
+
+            
+                 
+            usuarioService.addVideojuegoToFavorites(id, idVideojuego);
+
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while getting videojuegos favoritos for usuario id: " + id, e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    
+    /*Nuevos métodos para eliminar videojuegos de la lista de favoritos de un usuario */
+    @DeleteMapping("/{id}/videojuegos-favoritos/{videojuegoId}")
+    public ResponseEntity<Void> removeVideojuegoFromFavorites(@PathVariable Long id, @PathVariable Long videojuegoId) {
+        try {
+            usuarioService.removeVideojuegoFromFavorites(id, videojuegoId);
+            // Devuelve una respuesta HTTP 200 OK si todo sale bien
+            return ResponseEntity.ok().build();
+        } catch (NoSuchElementException e) {
+            // Si no se encuentra el usuario o el videojuego, devuelve una respuesta HTTP 404 Not Found
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        
+        } catch (Exception e) {
+            // Manejo general de cualquier otra excepción
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

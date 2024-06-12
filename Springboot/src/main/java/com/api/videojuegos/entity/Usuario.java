@@ -52,9 +52,14 @@ public class Usuario implements UserDetails {
     @OneToMany(mappedBy = "usuario")
     private Set<Comentario> comentarios; // Nueva relación con comentarios
     
-    @ManyToMany(mappedBy = "usuariosFavoritos")
-    private Set<Videojuegos> videojuegosFavoritos; // Nueva relación con videojuegos favoritos
-
+    
+    @ManyToMany //(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+        name = "videojuego_usuario_favorito",
+        joinColumns = @JoinColumn(name = "usuario_id"),
+        inverseJoinColumns = @JoinColumn(name = "videojuego_id")
+    )
+    private Set<Videojuegos> videojuegosFavoritos = new HashSet<>();
     @Transactional
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

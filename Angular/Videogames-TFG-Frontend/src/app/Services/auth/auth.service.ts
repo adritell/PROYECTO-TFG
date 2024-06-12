@@ -17,6 +17,8 @@ export class AuthService {
   currentUser: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
   isAdmin: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   id: number | null = null;
+  // Email del usuario actual
+  email: string | null = null;
 
   constructor(private http: HttpClient, private router: Router) {
     this.initializeCurrentUser();
@@ -82,6 +84,7 @@ registrarUsuario(datosRegistro: any): Observable<any> {
       this.currentUser.next(user);
       this.isAdmin.next(user.roles.includes('ROLE_ADMIN'));
       this.id = tokenDecoded.id;
+      this.email = tokenDecoded.sub;
     } else {
       this.clearCurrentUser();
     }
@@ -105,6 +108,11 @@ registrarUsuario(datosRegistro: any): Observable<any> {
 
   getToken(): string {
     return localStorage.getItem('token') || '';
+  }
+
+  //Metodo para obtener el email del usuario actual
+  getCurrentUserEmail(): string | null {
+    return this.email;
   }
 
 }

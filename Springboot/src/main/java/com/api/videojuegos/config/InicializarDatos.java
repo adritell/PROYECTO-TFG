@@ -62,6 +62,8 @@ public class InicializarDatos implements CommandLineRunner {
             usuario3.setEmail("pepe@gmail.com");
             usuario3.setPassword(passwordEncoder.encode("password"));
             usuarioRepository.save(usuario3);
+            
+         
 
         } catch (Exception e) {
         	

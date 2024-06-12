@@ -1,0 +1,21 @@
+<div class="container mt-2 ms-2">
+  <div class="row min-vh-100 d-flex flex-column">
+    <div class="col">
+      <div class="row">
+        <!-- Bucle para mostrar cada juego en una tarjeta -->
+        <div class="col-md-4 mb-4" *ngFor="let game of favoritos">
+          <div class="card shadow-sm game-card" (click)="navigateToGame(game)">
+            <img [src]="game.imagePath" class="card-img-top" alt="{{game.nombre}}">
+            <div class="card-body">
+              <h5 class="card-title">{{game.nombre}}</h5>
+              <p class="card-text">{{game.descripcion}}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">{{ game.precio === 0 ? 'Free to play' : game.precio }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

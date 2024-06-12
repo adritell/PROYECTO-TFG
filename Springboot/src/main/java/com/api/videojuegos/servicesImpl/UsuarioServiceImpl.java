@@ -6,7 +6,9 @@ import com.api.videojuegos.entity.Rol;
 import com.api.videojuegos.entity.Usuario;
 import com.api.videojuegos.entity.Videojuegos;
 import com.api.videojuegos.exceptions.BadRequestException;
+import com.api.videojuegos.exceptions.ResourceNotFoundException;
 import com.api.videojuegos.repository.UsuarioRepository;
+import com.api.videojuegos.repository.VideojuegosRepository;
 import com.api.videojuegos.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,6 +25,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private UsuarioRepository userRepository;
+    
+    @Autowired
+    private VideojuegosRepository videojuegosRepository;
 
     @Override
     public Usuario createUser(Usuario user) {
@@ -106,10 +111,57 @@ public class UsuarioServiceImpl implements UsuarioService {
         return userRepository.findById(id);
     }
     
-    
+    //Metodo para obetener los videojuegos favoritos de un usuario por su id
     @Override
     public List<Videojuegos> getVideojuegosFavoritosByUsuarioId(Long usuarioId) {
         Optional<Usuario> usuario = userRepository.findById(usuarioId);
         return usuario.map(Usuario::getVideojuegosFavoritos).orElse(Collections.emptySet()).stream().toList();
     }
+    
+    
+    // Nuevo método para añadir un videojuego a favoritos
+    public void addVideojuegoToFavorites(Long usuarioId, Long idVideojuego) {
+        Optional<Usuario> optionalUsuario = userRepository.findById(usuarioId);
+
+        Videojuegos videojuego = videojuegosRepository.findById(idVideojuego)
+                .orElseThrow(() -> new RuntimeException("Videojuego no encontrado"));
+
+
+        if (optionalUsuario.isPresent()) {
+            Usuario usuario = optionalUsuario.get();
+            usuario.getVideojuegosFavoritos().add(videojuego);
+            userRepository.save(usuario);
+        } else {
+            throw new RuntimeException("Usuario no encontrado");
+        }
+    }
+    
+    /*Nuevo método para eliminar videojuegos de la lista de favoritos de un usuario */
+    public void removeVideojuegoFromFavorites(Long usuarioId, Long videojuegoId) {
+
+        Usuario usuario = userRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Videojuegos videojuego = videojuegosRepository.findById(videojuegoId)
+                .orElseThrow(() -> new RuntimeException("Videojuego no encontrado"));
+
+        usuario.getVideojuegosFavoritos().remove(videojuego);
+        userRepository.save(usuario);
+    }
+    
+    
+    
+    
+    public Optional<Usuario> findById(Long id) {
+        return userRepository.findById(id);
+    }
+
+
+
+	
+    
+    
+
+
+
+	
 }

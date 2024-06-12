@@ -54,16 +54,14 @@ public class Videojuegos {
     
     // Relación con la tabla de comentarios
     @JsonManagedReference
-    @OneToMany(mappedBy = "videojuegos")
+    @OneToMany(mappedBy = "videojuegos", cascade = CascadeType.ALL, orphanRemoval = true)
+    //@OneToMany(mappedBy = "videojuegos")
     private Set<Comentario> comentarios = new HashSet<>();
     
-    @ManyToMany
-    @JoinTable(
-        name = "videojuego_usuario_favorito",
-        joinColumns = @JoinColumn(name = "videojuego_id"),
-        inverseJoinColumns = @JoinColumn(name = "usuario_id")
-    )
-    private Set<Usuario> usuariosFavoritos = new HashSet<>(); // Nueva relación con usuarios favoritos
+    
+
+    @ManyToMany(mappedBy = "videojuegosFavoritos") 
+    private Set<Usuario> usuariosFavoritos = new HashSet<>();
     
     
 }
