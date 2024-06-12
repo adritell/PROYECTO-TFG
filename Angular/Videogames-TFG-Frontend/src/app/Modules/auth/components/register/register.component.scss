@@ -1,0 +1,43 @@
+/* General Styles */
+.container {
+  height: 100vh;
+}
+
+.card {
+  max-width: 900px;
+}
+
+/* Form Styles */
+.form-container {
+  background-color: #fff;
+}
+
+.input-group {
+  margin-bottom: 1rem;
+}
+
+.input-group .form-control,
+.input-group .input-group-text {
+  height: 3rem;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #004085;
+}
+
+/* Logo Styles */
+.banner-container {
+  background-color: #f8f9fa;
+  border-radius: 0.25rem 0 0 0.25rem;
+  padding: 2rem;
+}
+
+.logo-img {
+  max-width: 100px;
+}

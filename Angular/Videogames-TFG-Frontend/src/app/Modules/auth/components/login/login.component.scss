@@ -1,0 +1,39 @@
+.login-container {
+  background-color: #6c757d;
+  border-radius: 1rem;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.form-control {
+  background-color: #fff;
+  color: #000;
+}
+
+.btn-primary {
+  background-color: #20c997;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #198754;
+}
+
+.btn-success {
+  background-color: #198754;
+  border: none;
+}
+
+.btn-success:hover {
+  background-color: #146c43;
+}
+
+.bi-person {
+  font-size: 4rem;
+  color: #fff;
+}
+
+label,
+a {
+  color: #fff;
+}
+

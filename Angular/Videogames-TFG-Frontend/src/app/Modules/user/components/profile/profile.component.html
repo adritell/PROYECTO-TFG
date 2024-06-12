@@ -1,0 +1,18 @@
+<div *ngIf="user">
+  <div class="card">
+    <div class="card-header">
+      <h4>{{ user.nombre }}</h4>
+    </div>
+    <div class="card-body">
+      <p><strong>Email:</strong> {{ user.email }}</p>
+      <ng-container *ngIf="isUsuarioAdminResponse(user)">
+        <p><strong>Apellidos:</strong> {{ user.apellidos }}</p>
+        <p><strong>Roles:</strong> {{ user.roles.join(', ') }}</p>
+        <p><strong>Activo:</strong> {{ user.activo ? 'Sí' : 'No' }}</p>
+      </ng-container>
+    </div>
+  </div>
+</div>
+<div *ngIf="!user">
+  <p>Cargando datos del usuario...</p>
+</div>
