@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { VideojuegoDTO } from '../../../../Interfaces/DTO/VideojuegoDTO';
 import { VideogamesService } from '../../../../Services/videogames/videogames.service';
 import { AuthService } from '../../../../Services/auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-wishlist',
@@ -11,7 +12,7 @@ import { AuthService } from '../../../../Services/auth/auth.service';
 export class WishlistComponent {
   favoritos: VideojuegoDTO[] = [];
 
-  constructor(private videogamesService: VideogamesService, private authService: AuthService) { }
+  constructor(private router:Router ,private videogamesService: VideogamesService, private authService: AuthService) { }
 
   ngOnInit(): void {
     console.log('Loading favorites...');  // Depuración
@@ -31,6 +32,6 @@ export class WishlistComponent {
 
   // Navegar a los detalles del juego
   navigateToGame(game: VideojuegoDTO): void {
-
+    this.router.navigate(['/detalles-juego', game.id]);
   }
 }

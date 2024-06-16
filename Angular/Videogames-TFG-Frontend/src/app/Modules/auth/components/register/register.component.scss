@@ -1,43 +1,32 @@
-/* General Styles */
-.container {
-  height: 100vh;
+.form-label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
 }
 
-.card {
-  max-width: 900px;
+.text-danger {
+  font-size: 0.75rem; /* Pequeño tamaño de fuente */
+  margin-top: 0.25rem;
 }
 
-/* Form Styles */
 .form-container {
-  background-color: #fff;
+  height: 100%;
+  overflow-y: auto;
 }
 
-.input-group {
-  margin-bottom: 1rem;
+.custom-input {
+  display: flex;
+  align-items: center;
 }
 
-.input-group .form-control,
-.input-group .input-group-text {
-  height: 3rem;
+.custom-input .form-control {
+  flex: 1;
 }
 
-.btn-primary {
-  background-color: #007bff;
-  border-color: #007bff;
-}
-
-.btn-primary:hover {
-  background-color: #0056b3;
-  border-color: #004085;
-}
-
-/* Logo Styles */
-.banner-container {
-  background-color: #f8f9fa;
-  border-radius: 0.25rem 0 0 0.25rem;
-  padding: 2rem;
-}
 
 .logo-img {
-  max-width: 100px;
+  width: 50%;
+  height: auto;
 }
+
+
+

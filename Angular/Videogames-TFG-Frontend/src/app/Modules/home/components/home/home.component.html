@@ -17,8 +17,13 @@
                   <button class="btn btn-primary" (click)="addWishList($event, game)">
                     <i class="bi" [ngClass]="{'bi-heart-fill text-danger': isFavorite(game), 'bi-heart': !isFavorite(game)}"></i>
                   </button>
+
                 </div>
-                <small class="text-muted">{{ game.precio === 0 ? 'Free to play' : game.precio }}</small>
+
+                <button type="button" class="align-items-center">
+                  <i class="bi bi-plus"></i>
+                </button>
+
               </div>
             </div>
           </div>

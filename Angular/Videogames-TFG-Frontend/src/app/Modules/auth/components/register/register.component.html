@@ -6,37 +6,70 @@
         <img class="logo-img" src="../../../assets/logo.svg" alt="Logo">
       </div>
       <div class="form-container col-md-6 p-4 d-flex align-items-center">
-        <div class="login-form d-flex flex-column align-items-center w-100">
+        <div class="login-form d-flex flex-column align-items-center w-100" style="height: 100%; overflow-y: auto;">
           <h2>Videogames Library</h2>
           <form [formGroup]="registerForm" (ngSubmit)="onSubmit(registerForm.value)" class="d-flex flex-column w-100 align-items-center">
-            <div class="input-group custom-input mt-3 w-100">
-              <input class="form-control" type="text" name="nombre" formControlName="nombre" placeholder="Introduce tu nombre">
-              <span class="input-group-text bg-primary text-black justify-content-center">
-                <i class="fa fa-user"></i>
+            <div class="form-group mt-3 w-100">
+              <label for="nombre" class="form-label">Nombre</label>
+              <div class="input-group custom-input">
+                <input class="form-control" id="nombre" type="text" name="nombre" formControlName="nombre">
+                <span class="input-group-text bg-primary text-black justify-content-center">
+                  <i class="fa fa-user"></i>
+                </span>
+              </div>
+              <span *ngIf="registerForm.get('nombre')?.touched && registerForm.get('nombre')?.invalid" class="text-danger small">
+                Nombre es requerido y debe tener al menos 3 caracteres.
               </span>
             </div>
-            <div class="input-group custom-input mt-3 w-100">
-              <input class="form-control" type="text" name="apellidos" formControlName="apellidos" placeholder="Introduce tus apellidos">
-              <span class="input-group-text bg-primary text-black justify-content-center">
-                <i class="fa fa-user"></i>
+            <div class="form-group mt-3 w-100">
+              <label for="apellidos" class="form-label">Apellidos</label>
+              <div class="input-group custom-input">
+                <input class="form-control" id="apellidos" type="text" name="apellidos" formControlName="apellidos">
+                <span class="input-group-text bg-primary text-black justify-content-center">
+                  <i class="fa fa-user"></i>
+                </span>
+              </div>
+              <span *ngIf="registerForm.get('apellidos')?.touched && registerForm.get('apellidos')?.invalid" class="text-danger small">
+                Apellidos son requeridos y deben tener al menos 3 caracteres.
               </span>
             </div>
-            <div class="input-group custom-input mt-3 w-100">
-              <input class="form-control" type="text" name="email" formControlName="email" placeholder="Introduce tu email corporativo">
-              <span class="input-group-text bg-primary text-black justify-content-center">
-                <i class="fa fa-envelope"></i>
+            <div class="form-group mt-3 w-100">
+              <label for="email" class="form-label">Email</label>
+              <div class="input-group custom-input">
+                <input class="form-control" id="email" type="text" name="email" formControlName="email">
+                <span class="input-group-text bg-primary text-black justify-content-center">
+                  <i class="fa fa-envelope"></i>
+                </span>
+              </div>
+              <span *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.invalid" class="text-danger small">
+                Email es requerido y debe ser válido (solo Gmail).
               </span>
             </div>
-            <div class="input-group custom-input mt-3 w-100">
-              <input class="form-control" type="password" name="password" formControlName="password" placeholder="Introduce tu contraseña">
-              <span class="input-group-text bg-primary text-black justify-content-center">
-                <i class="fa fa-lock"></i>
+            <div class="form-group mt-3 w-100">
+              <label for="password" class="form-label">Contraseña</label>
+              <div class="input-group custom-input">
+                <input class="form-control" id="password" type="password" name="password" formControlName="password">
+                <span class="input-group-text bg-primary text-black justify-content-center">
+                  <i class="fa fa-lock"></i>
+                </span>
+              </div>
+              <span *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid" class="text-danger small">
+                Contraseña debe tener entre 8 y 20 caracteres, incluyendo mayúsculas, minúsculas, un número y un carácter especial.
               </span>
             </div>
-            <div class="input-group custom-input mt-3 w-100">
-              <input class="form-control" type="password" name="confirmPassword" formControlName="confirmPassword" placeholder="Confirma tu contraseña">
-              <span class="input-group-text bg-primary text-black justify-content-center">
-                <i class="fa fa-lock"></i>
+            <div class="form-group mt-3 w-100">
+              <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+              <div class="input-group custom-input">
+                <input class="form-control" id="confirmPassword" type="password" name="confirmPassword" formControlName="confirmPassword">
+                <span class="input-group-text bg-primary text-black justify-content-center">
+                  <i class="fa fa-lock"></i>
+                </span>
+              </div>
+              <span *ngIf="registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.invalid" class="text-danger small">
+                Confirmar contraseña es requerido.
+              </span>
+              <span *ngIf="registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched" class="text-danger small">
+                Las contraseñas no coinciden.
               </span>
             </div>
             <button type="submit" class="btn btn-primary w-75 mt-4">Registrar</button>

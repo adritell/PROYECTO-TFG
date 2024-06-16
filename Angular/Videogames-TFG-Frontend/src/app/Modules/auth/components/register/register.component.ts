@@ -27,11 +27,15 @@ export class RegisterComponent implements OnInit{
         Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=])(?!.*[.]).{8,20}$/)
       ]],
       confirmPassword: ['', Validators.required]
-    });
+    }, { validator: this.passwordMatchValidator });
+  }
+
+  passwordMatchValidator(form: FormGroup) {
+    return form.get('password')!.value === form.get('confirmPassword')!.value ? null : { mismatch: true };
   }
 
   onSubmit(datosRegistro: any): void {
-    if (this.registerForm.valid && this.registerForm.value.password === this.registerForm.value.confirmPassword) {
+    if (this.registerForm.valid && this.registerForm.errors == null) {
       this.passwordsDoNotMatch = false;
       console.log("Form is valid and passwords match");
       this.authService.registrarUsuario(this.registerForm.value).subscribe({
