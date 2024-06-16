@@ -24,29 +24,6 @@ public class JwtAuthenticationResponse {
         this.token = token;
     }
 
-   /* public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public Set<Rol> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Rol> roles) {
-        this.roles = roles;
-    }
-
-    public LocalDateTime getExpirationDate() {
-        return expirationDate;
-    }
-
-    public void setExpirationDate(LocalDateTime expirationDate) {
-        this.expirationDate = expirationDate;
-    }*/
 
     public static JwtAuthenticationResponseBuilder builder() {
         return new JwtAuthenticationResponseBuilder();

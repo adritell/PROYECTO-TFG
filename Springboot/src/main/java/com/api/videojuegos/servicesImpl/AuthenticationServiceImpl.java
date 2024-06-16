@@ -58,7 +58,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setLastName(request.getApellidos());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setActivo(false); // La cuenta está inactiva hasta que se confirme por correo electrónico
+        /*user.setActivo(false); // La cuenta está inactiva hasta que se confirme por correo electrónico*/
+        // La cuenta está activa de inmediato
+        user.setActivo(true); 
         user.setRoles(Collections.singleton(Rol.ROLE_USER));
         
         // Guardar el usuario en la base de datos
