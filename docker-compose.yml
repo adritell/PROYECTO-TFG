@@ -1,4 +1,5 @@
-version: "3"
+version: "3.8"  # Usamos una versión más reciente para compatibilidad con healthchecks
+
 services:
   angular-app:
     build:
@@ -8,6 +9,10 @@ services:
       - "4200:4200"
     depends_on:
       - spring-boot-app
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./Angular/Videogames-TFG-Frontend/src/assets/games:/app/src/assets/games
 
   spring-boot-app:
     build:
@@ -16,25 +21,27 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/videogame_library
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
 
   mysql:
     image: mysql:8.0
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: videogame_library
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     volumes:
-      - mysql-data:/var/lib/mysql
-      
-
-
-  
+      - videogames-tfg-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
-  mysql-data:
+  videogames-tfg-mysql-data:

@@ -1,24 +1,26 @@
-# Compilación
+# Etapa de compilación
 FROM maven:3.8.6-eclipse-temurin-17 AS builder
 WORKDIR /usr/src/project
 
+# Copiar los archivos necesarios para la compilación
+COPY pom.xml ./
+COPY src ./src
 
+# Construir el JAR de la aplicación
+RUN mvn clean package -DskipTests
 
-# Verificar si existe la carpeta target y borrarla si es necesario
-RUN test -d "target" && RUN rm -rf target || true
+# Etapa de ejecución
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
 
-# Copiar el resto de los archivos del proyecto
-COPY . .
+# Exponer el puerto en el que corre la aplicación
+EXPOSE 8080
 
-# Compilar el proyecto con Maven
-RUN mvn package -DskipTests
-
-# Ejecución
-FROM openjdk:17-jdk-alpine
+# Crear un volumen temporal para almacenamiento
 VOLUME /tmp
 
-# Copiar el archivo JAR generado desde la etapa anterior
-COPY --from=builder /usr/src/project/target/*.jar /app.jar
+# Copiar el JAR generado desde la etapa de compilación
+COPY --from=builder /usr/src/project/target/*.jar app.jar
 
-# Punto de entrada para ejecutar la aplicación Spring Boot
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+# Comando para ejecutar la aplicación
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
