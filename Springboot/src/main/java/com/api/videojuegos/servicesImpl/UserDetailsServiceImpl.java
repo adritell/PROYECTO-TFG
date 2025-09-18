@@ -1,6 +1,5 @@
 package com.api.videojuegos.servicesImpl;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,17 +22,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Usuario user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con email: " + email));
 
-        // Convertir el conjunto de roles a una lista de nombres de roles
-        List<String> roles = user.getRoles().stream()
-                                           .map(Enum::name) // Obtener el nombre de cada rol
-                                           .collect(Collectors.toList());
-
-        // Devolver un UserDetails basado en la entidad Usuario
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getEmail())
                 .password(user.getPassword())
-                .roles(roles.toArray(new String[0])) // Pasar la lista de roles como un array de strings
+                .authorities(user.getRoles().stream()
+                        .map(Enum::name)
+                        .collect(Collectors.toList())
+                        .toArray(new String[0]))
                 .build();
     }
-    
 }

@@ -4,7 +4,6 @@ import com.api.videojuegos.entity.Comentario;
 import com.api.videojuegos.entity.Usuario;
 import com.api.videojuegos.entity.Videojuegos;
 
-import jakarta.transaction.Transactional;
 
 import java.util.List;
 
