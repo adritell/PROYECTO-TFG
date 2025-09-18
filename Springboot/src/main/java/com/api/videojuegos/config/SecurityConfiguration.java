@@ -34,22 +34,39 @@ public class SecurityConfiguration{
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-            http.csrf(csrf -> csrf.disable())
+        http.csrf(csrf -> csrf.disable())
             .cors(cors -> {})
-                    .authorizeHttpRequests(request ->
-                            request
-                                    .requestMatchers("api/v1/auth/**").permitAll().
-                                    requestMatchers(HttpMethod.GET, "/api/v1/auth**", "/api/v1/comentarios**").hasAnyAuthority(Rol.ROLE_USER.toString(), Rol.ROLE_ADMIN.toString())
-                                    .requestMatchers(HttpMethod.POST, "/api/v1/comentarios**").hasAnyAuthority(Rol.ROLE_USER.toString(), Rol.ROLE_ADMIN.toString())
-                                    .requestMatchers(HttpMethod.POST, "/api/v1/usuario**", "/api/v1/videojuegos**").hasAuthority(Rol.ROLE_ADMIN.toString())
-                                    .requestMatchers(HttpMethod.PUT, "/api/v1/videojuegos/**").hasAuthority(Rol.ROLE_ADMIN.toString())
-                                    .requestMatchers(HttpMethod.DELETE, "/api/v1/videojuegos/**").hasAuthority(Rol.ROLE_ADMIN.toString())
-                                    .anyRequest().authenticated())
-                    .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
-                    .authenticationProvider(authenticationProvider()).addFilterBefore(
-                    jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-	        return http.build();
-	    }
+				.authorizeHttpRequests(request -> request
+						.requestMatchers("/api/v1/auth/**").permitAll()
+
+						// Endpoints accesibles por USER y ADMIN
+						.requestMatchers(HttpMethod.GET, "/api/v1/comentarios/**").hasAnyAuthority(Rol.ROLE_USER.name(), Rol.ROLE_ADMIN.name())
+						.requestMatchers(HttpMethod.POST, "/api/v1/comentarios/**").hasAnyAuthority(Rol.ROLE_USER.name(), Rol.ROLE_ADMIN.name())
+
+						// Favoritos (me y por id de usuario)
+						.requestMatchers(HttpMethod.GET, "/api/v1/usuario/me/videojuegos-favoritos/**").hasAnyAuthority(Rol.ROLE_USER.name(), Rol.ROLE_ADMIN.name())
+						.requestMatchers(HttpMethod.POST, "/api/v1/usuario/me/videojuegos-favoritos/**").hasAnyAuthority(Rol.ROLE_USER.name(), Rol.ROLE_ADMIN.name())
+						.requestMatchers(HttpMethod.DELETE, "/api/v1/usuario/me/videojuegos-favoritos/**").hasAnyAuthority(Rol.ROLE_USER.name(), Rol.ROLE_ADMIN.name())
+
+						.requestMatchers(HttpMethod.GET, "/api/v1/usuario/*/videojuegos-favoritos/**").hasAnyAuthority(Rol.ROLE_USER.name(), Rol.ROLE_ADMIN.name())
+						.requestMatchers(HttpMethod.POST, "/api/v1/usuario/*/videojuegos-favoritos/**").hasAnyAuthority(Rol.ROLE_USER.name(), Rol.ROLE_ADMIN.name())
+						.requestMatchers(HttpMethod.DELETE, "/api/v1/usuario/*/videojuegos-favoritos/**").hasAnyAuthority(Rol.ROLE_USER.name(), Rol.ROLE_ADMIN.name())
+
+						// Endpoints SOLO admin
+						.requestMatchers(HttpMethod.POST, "/api/v1/usuario/**").hasAuthority(Rol.ROLE_ADMIN.name())
+						.requestMatchers(HttpMethod.POST, "/api/v1/videojuegos/**").hasAuthority(Rol.ROLE_ADMIN.name())
+						.requestMatchers(HttpMethod.PUT, "/api/v1/videojuegos/**").hasAuthority(Rol.ROLE_ADMIN.name())
+						.requestMatchers(HttpMethod.DELETE, "/api/v1/videojuegos/**").hasAuthority(Rol.ROLE_ADMIN.name())
+
+						.anyRequest().authenticated()
+				)
+
+				.sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
 
 	    @Bean
 	    PasswordEncoder passwordEncoder() {

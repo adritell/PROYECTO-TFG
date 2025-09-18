@@ -1,4 +1,4 @@
-use videogame_library;
+use videogames;
 
 INSERT INTO videojuegos (id, nombre, genero, descripcion, anio_Publicacion, precio, calificacion_por_edades, publicador, image_Path) VALUES
 (1, 'Elden Ring', 'Action RPG', 'A fantasy action RPG.', 2022, 59.99, 'Mature', 'FromSoftware', '../../../../../assets/games/elden_ring.jpeg'),

@@ -130,17 +130,17 @@ export class VideogamesService {
 
 
   //Manejar juegos favoritos
-  getFavorites(userId: number): Observable<VideojuegoDTO[]> {
-    return this.http.get<VideojuegoDTO[]>(`http://localhost:8080/api/v1/usuario/${userId}/videojuegos-favoritos`);
-  }
+ getFavorites(): Observable<VideojuegoDTO[]> {
+  return this.http.get<VideojuegoDTO[]>(`http://localhost:8080/api/v1/usuario/me/videojuegos-favoritos`);
+}
 
-  addFavorite(userId: number, gameId: number): Observable<void> {
-    return this.http.post<void>(`http://localhost:8080/api/v1/usuario/${userId}/videojuegos-favoritos/${gameId}`, {});
-  }
+addFavorite(gameId: number): Observable<void> {
+  return this.http.post<void>(`http://localhost:8080/api/v1/usuario/me/videojuegos-favoritos/${gameId}`, {});
+}
 
-  removeFavorite(userId: number, gameId: number): Observable<void> {
-    return this.http.delete<void>(`http://localhost:8080/api/v1/usuario/${userId}/videojuegos-favoritos/${gameId}`);
-  }
+removeFavorite(gameId: number): Observable<void> {
+  return this.http.delete<void>(`http://localhost:8080/api/v1/usuario/me/videojuegos-favoritos/${gameId}`);
+}
 
 
 

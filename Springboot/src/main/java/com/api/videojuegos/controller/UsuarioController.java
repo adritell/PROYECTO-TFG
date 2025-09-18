@@ -1,7 +1,6 @@
 package com.api.videojuegos.controller;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -43,23 +42,23 @@ import com.api.videojuegos.service.VideojuegosService;
 @RestController
 @RequestMapping("/api/v1/usuario")
 public class UsuarioController {
-    
+
     // Inicialización del logger para el controlador de usuarios
     private static final Logger logger = LoggerFactory.getLogger(UsuarioController.class);
 
     // Inyección de dependencias del servicio de usuarios
     @Autowired
     UsuarioService usuarioService;
-    
+
     @Autowired
     UsuarioRepository userRepository;
-    
+
     @Autowired
     VideojuegosService videojuegoService;
-    
+
     @Autowired
     VideojuegosRepository videojuegoRepository;
-    
+
     @Autowired
     JwtService jwtService;
 
@@ -74,20 +73,20 @@ public class UsuarioController {
         try {
             // Extraer el valor del token eliminando el prefijo "Bearer "
             String tokenValue = token.substring(7);
-            
+
             // Obtener el email del usuario desde el token
             String userEmail = jwtService.extractUserName(tokenValue);
-            
+
             // Obtener el usuario desde el email
             Usuario usuario = userRepository.findByEmail(userEmail)
                     .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-            
+
             // Verificar si el usuario es administrador
             boolean isAdmin = usuario.getRoles().stream().anyMatch(role -> role == Rol.ROLE_ADMIN);
-            
+
             // Obtener todos los usuarios
             List<Usuario> usuarios = usuarioService.getAllUsuarios();
-            
+
             if (isAdmin) {
                 // Si el usuario es administrador, devolver información detallada
                 List<UsuarioAdminResponse> adminResponses = usuarios.stream()
@@ -105,7 +104,7 @@ public class UsuarioController {
                 // Si el usuario no es administrador, devolver información reducida
                 List<UsuarioResponse> userResponses = usuarios.stream()
                         .map(user -> new UsuarioResponse(
-                        		user.getId(),
+                                user.getId(),
                                 user.getFirstName(),
                                 user.getEmail()
                         ))
@@ -161,7 +160,7 @@ public class UsuarioController {
                 } else {
                     // Si el usuario no es administrador, devolver información reducida
                     UsuarioResponse userResponse = new UsuarioResponse(
-                    		usuario.getId(),
+                            usuario.getId(),
                             usuario.getFirstName(),
                             usuario.getEmail()
                     );
@@ -175,14 +174,13 @@ public class UsuarioController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     /**
      * Actualiza un usuario existente por su ID.
      * Requiere el rol 'ROLE_ADMIN'.
      * @param id ID del usuario a actualizar.
-     * @param usuario Objeto Usuario con los datos actualizados.
      * @return El usuario actualizado.
-     */
+     **/
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Usuario actualizarUsuario(@PathVariable Long id, @RequestBody UsuarioAdminResponse usuarioAdminResponse, @RequestHeader(name = "Authorization") String token) {
@@ -249,7 +247,7 @@ public class UsuarioController {
      */
     @PostMapping
     public Usuario crearUsuario(@RequestBody UsuarioAdminResponse usuarioAdminResponse, @RequestHeader(name = "Authorization") String token) {
-    	// Obtener el usuario actualmente autenticado desde el contexto de seguridad
+        // Obtener el usuario actualmente autenticado desde el contexto de seguridad
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication.getName();
         boolean isAdmin = usuarioService.isAdmin(userEmail);
@@ -257,9 +255,9 @@ public class UsuarioController {
         // Verificar si el usuario actual es un administrador
         if (!isAdmin) {
             // El usuario actual no es un administrador, lanzar una excepción o devolver un error apropiado
-        	throw new UnauthorizedAccessException("Solo los admin pueden crear usuarios");
+            throw new UnauthorizedAccessException("Solo los admin pueden crear usuarios");
         }
-        
+
 
         // Registro de información sobre la solicitud de creación de un nuevo usuario
         logger.info("Creando un nuevo usuario");
@@ -278,72 +276,77 @@ public class UsuarioController {
         // Llamada al servicio de usuarios para crear un nuevo usuario
         return usuarioService.createUser(usuario);
     }
-    
-    
-    
+
+
+
     /*
      NUEVOS METODOS A PROBAR
       */
-    
-    @GetMapping("/{id}/videojuegos-favoritos")
-    public ResponseEntity<List<VideojuegoResponse>> getVideojuegosFavoritosByUsuario(@PathVariable Long id) {
+
+
+    @GetMapping("/me/videojuegos-favoritos")
+    public ResponseEntity<List<VideojuegoResponse>> getMisFavoritos(Authentication authentication) {
         try {
-            List<Videojuegos> videojuegosFavoritos = usuarioService.getVideojuegosFavoritosByUsuarioId(id);
+            String userEmail = authentication.getName();
+            Usuario usuario = userRepository.findByEmail(userEmail)
+                    .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+            List<Videojuegos> videojuegosFavoritos = usuarioService.getVideojuegosFavoritosByUsuarioId(usuario.getId());
 
             List<VideojuegoResponse> videojuegoResponses = videojuegosFavoritos.stream()
-                .map(videojuego -> new VideojuegoResponse(
-                		videojuego.getId(),
-                        videojuego.getNombre(),
-                        videojuego.getGenero(),
-                        videojuego.getDescripcion(),
-                        videojuego.getAnioPublicacion(),
-                        videojuego.getPrecio(),
-                        videojuego.getCalificacionPorEdades(),
-                        videojuego.getPublicador(),
-                        videojuego.getImagePath(),
-                        videojuego.getPlataformas()
-                ))
-                .collect(Collectors.toList());
+                    .map(videojuego -> new VideojuegoResponse(
+                            videojuego.getId(),
+                            videojuego.getNombre(),
+                            videojuego.getGenero(),
+                            videojuego.getDescripcion(),
+                            videojuego.getAnioPublicacion(),
+                            videojuego.getPrecio(),
+                            videojuego.getCalificacionPorEdades(),
+                            videojuego.getPublicador(),
+                            videojuego.getImagePath(),
+                            videojuego.getPlataformas()
+                    ))
+                    .toList();
 
-            return new ResponseEntity<>(videojuegoResponses, HttpStatus.OK);
+            return ResponseEntity.ok(videojuegoResponses);
         } catch (Exception e) {
-            logger.error("Error while getting videojuegos favoritos for usuario id: " + id, e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            logger.error("Error al obtener favoritos del usuario autenticado", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    
-    
+
+
+
+
     /*Nuevos método para añadir videojuegos de la lista de favoritos de un usuario */
-    @PostMapping("/{id}/videojuegos-favoritos/{idVideojuego}")
-    public ResponseEntity<Void> addVideojuegoToFavorites(@PathVariable Long id, @PathVariable Long idVideojuego) {
+    @PostMapping("/me/videojuegos-favoritos/{idVideojuego}")
+    public ResponseEntity<Void> addMisFavoritos(@PathVariable Long idVideojuego, Authentication authentication) {
         try {
-            List<Videojuegos> videojuegosFavoritos = usuarioService.getVideojuegosFavoritosByUsuarioId(id);
+            String userEmail = authentication.getName();
+            Usuario usuario = userRepository.findByEmail(userEmail)
+                    .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
-            
-                 
-            usuarioService.addVideojuegoToFavorites(id, idVideojuego);
+            usuarioService.addVideojuegoToFavorites(usuario.getId(), idVideojuego);
 
-            return new ResponseEntity<>(HttpStatus.OK);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
-            logger.error("Error while getting videojuegos favoritos for usuario id: " + id, e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            logger.error("Error al añadir favorito para el usuario autenticado", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    
-    /*Nuevos métodos para eliminar videojuegos de la lista de favoritos de un usuario */
-    @DeleteMapping("/{id}/videojuegos-favoritos/{videojuegoId}")
-    public ResponseEntity<Void> removeVideojuegoFromFavorites(@PathVariable Long id, @PathVariable Long videojuegoId) {
+    @DeleteMapping("/me/videojuegos-favoritos/{idVideojuego}")
+    public ResponseEntity<Void> removeMisFavoritos(@PathVariable Long idVideojuego, Authentication authentication) {
         try {
-            usuarioService.removeVideojuegoFromFavorites(id, videojuegoId);
-            // Devuelve una respuesta HTTP 200 OK si todo sale bien
+            String userEmail = authentication.getName();
+            Usuario usuario = userRepository.findByEmail(userEmail)
+                    .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+            usuarioService.removeVideojuegoFromFavorites(usuario.getId(), idVideojuego);
+
             return ResponseEntity.ok().build();
-        } catch (NoSuchElementException e) {
-            // Si no se encuentra el usuario o el videojuego, devuelve una respuesta HTTP 404 Not Found
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        
         } catch (Exception e) {
-            // Manejo general de cualquier otra excepción
+            logger.error("Error al eliminar favorito para el usuario autenticado", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

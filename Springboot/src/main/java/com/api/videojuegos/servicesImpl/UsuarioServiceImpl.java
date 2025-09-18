@@ -1,12 +1,10 @@
 package com.api.videojuegos.servicesImpl;
 
-import com.api.videojuegos.dto.UsuarioAdminResponse;
 import com.api.videojuegos.dto.UsuarioResponse;
 import com.api.videojuegos.entity.Rol;
 import com.api.videojuegos.entity.Usuario;
 import com.api.videojuegos.entity.Videojuegos;
 import com.api.videojuegos.exceptions.BadRequestException;
-import com.api.videojuegos.exceptions.ResourceNotFoundException;
 import com.api.videojuegos.repository.UsuarioRepository;
 import com.api.videojuegos.repository.VideojuegosRepository;
 import com.api.videojuegos.service.UsuarioService;

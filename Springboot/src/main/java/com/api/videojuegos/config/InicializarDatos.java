@@ -2,11 +2,8 @@ package com.api.videojuegos.config;
 
 import com.api.videojuegos.entity.Rol;
 import com.api.videojuegos.entity.Usuario;
-import com.api.videojuegos.entity.Videojuegos;
 import com.api.videojuegos.repository.UsuarioRepository;
-import com.api.videojuegos.repository.VideojuegosRepository;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,8 +21,7 @@ public class InicializarDatos implements CommandLineRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private VideojuegosRepository videojuegosRepository;
+
 
     @Override
     public void run(String... args) throws Exception {
