@@ -19,6 +19,7 @@ declare var bootstrap: any;
 export class UserComponent {
 
   editUserForm: FormGroup;
+  createUserForm: FormGroup;   
   adminUsers: UsuarioAdminResponse[] = [];
   normalUsers: UsuarioResponse[] = [];
   currentUserId: number;
@@ -33,6 +34,15 @@ export class UserComponent {
       nombre: [''],
       apellidos: [''],
       email: [''],
+      activo: [true],
+      roles: ['ROLE_USER']
+    });
+
+    this.createUserForm = this.fb.group({
+      nombre: [''],
+      apellidos: [''],
+      email: [''],
+      password: [''],   // obligatorio al crear
       activo: [true],
       roles: ['ROLE_USER']
     });
@@ -113,4 +123,41 @@ export class UserComponent {
       );
     }
   }
+
+  // Abrir formulario de creación
+  abrirCrearUsuario(): void {
+    const toastElement = document.getElementById('createUserToast');
+    if (toastElement) {
+      const toast = new bootstrap.Toast(toastElement);
+      toast.show();
+    }
+  }
+
+  // Crear usuario
+  onCreate(): void {
+  if (this.createUserForm.valid) {
+    const newUser = this.createUserForm.value;
+    newUser.roles = [newUser.roles]; // backend espera array de roles
+
+    this.userService.crearUsuario(newUser).subscribe(
+      (response) => {
+        this.adminUsers.push(response);
+        Swal.fire('Creado', 'Usuario creado correctamente', 'success');
+        const toastElement = document.getElementById('createUserToast');
+        if (toastElement) {
+          const toast = new bootstrap.Toast(toastElement);
+          toast.hide();
+        }
+      },
+      (error) => {
+        if (error.status === 400) {
+          Swal.fire('Error', 'El email ya está en uso', 'error');
+        } else {
+          Swal.fire('Error', 'No se pudo crear el usuario', 'error');
+        }
+        console.error('Error creando usuario', error);
+      }
+    );
+  }
+}
 }
