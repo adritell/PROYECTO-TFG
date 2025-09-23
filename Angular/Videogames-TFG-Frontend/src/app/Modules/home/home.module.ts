@@ -7,18 +7,22 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SearchModule } from '../search/search.module';
 import { WishlistComponent } from './components/wishlist/wishlist.component';
 import { DetallesJuegoComponent } from './components/detalles-juego/detalles-juego.component';
+import { MyGamesComponent } from './components/myGamesComponent/myGamesComponent.component';
+
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
   {path: 'wishlist', component: WishlistComponent},
   { path: 'detalles-juego/:id', component: DetallesJuegoComponent },
+  { path: 'my-games', component: MyGamesComponent }
 ]
 
 @NgModule({
   declarations: [
     HomeComponent,
     WishlistComponent,
-    DetallesJuegoComponent
+    DetallesJuegoComponent,
+    MyGamesComponent   
   ],
   imports: [
     RouterModule.forChild(routes),

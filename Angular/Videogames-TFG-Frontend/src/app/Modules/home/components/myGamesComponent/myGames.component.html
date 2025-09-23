@@ -1,0 +1,40 @@
+<div class="container mt-4">
+  <h2>Mis Juegos Comprados</h2>
+
+  <div *ngIf="loading" class="text-center mt-3">
+    <p>Cargando tus juegos...</p>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger mt-3">
+    {{ error }}
+  </div>
+
+  <div class="row mt-3" *ngIf="!loading && !error && myGames.length > 0">
+    <div class="col-md-4 mb-4" *ngFor="let game of myGames">
+      <div class="card h-100 shadow-sm game-card">
+        <a [routerLink]="['/detalles-juego', game.id]" class="text-decoration-none text-dark">
+          <img [src]="game.imagePath" class="card-img-top" [alt]="game.nombre" style="height:180px; object-fit:cover;">
+        </a>
+        <div class="card-body d-flex flex-column text-center">
+          <a [routerLink]="['/detalles-juego', game.id]" class="text-decoration-none text-dark">
+            <h6 class="card-title text-truncate">{{ game.nombre }}</h6>
+          </a>
+          <p class="mb-2"><strong>{{ game.precio | currency:'EUR' }}</strong></p>
+          <button class="btn btn-sm btn-primary mt-auto" (click)="confirmarCompra(game)">
+            Comprar de nuevo
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !error && myGames.length === 0" class="alert alert-info mt-3">
+    No has comprado ningún juego todavía.
+  </div>
+
+  <div *ngIf="!loading && totalPages > 1" class="pagination d-flex justify-content-center mt-3">
+    <button class="btn btn-sm btn-secondary me-2" [disabled]="currentPage === 0" (click)="changePage(currentPage - 1)">Anterior</button>
+    <span class="align-self-center">Página {{ currentPage + 1 }} de {{ totalPages }}</span>
+    <button class="btn btn-sm btn-secondary ms-2" [disabled]="currentPage === totalPages - 1" (click)="changePage(currentPage + 1)">Siguiente</button>
+  </div>
+</div>

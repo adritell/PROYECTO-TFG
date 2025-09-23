@@ -1,0 +1,23 @@
+.game-card {
+  max-height: 300px; /* fija la altura */
+  display: flex;
+  flex-direction: column;
+}
+
+.game-img {
+  max-height: 150px;
+  object-fit: cover;
+}
+
+
+.card-title {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.card-text {
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

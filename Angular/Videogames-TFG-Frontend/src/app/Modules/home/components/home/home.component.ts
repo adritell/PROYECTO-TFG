@@ -283,4 +283,35 @@ export class HomeComponent implements OnInit {
     }
   }
 
+
+  confirmarCompra(event: Event, game: VideojuegoDTO): void {
+  event.stopPropagation(); // Evita navegar al detalle del juego al hacer clic en el botón
+
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: `¿Quieres comprar "${game.nombre}" por ${game.precio}€?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, comprar',
+    cancelButtonText: 'Cancelar',
+    reverseButtons: true
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        this.videogamesService.comprarJuego(game.id, token).subscribe({
+          next: (res: any) => {
+            Swal.fire('Éxito', res.message, 'success');
+          },
+          error: (err) => {
+            console.error('Error al comprar el juego', err);
+            Swal.fire('Error', err.error?.message || 'No se pudo completar la compra', 'error');
+          }
+        });
+      } else {
+        Swal.fire('No autenticado', 'Debes iniciar sesión para comprar.', 'warning');
+      }
+    }
+  });
+}
 }

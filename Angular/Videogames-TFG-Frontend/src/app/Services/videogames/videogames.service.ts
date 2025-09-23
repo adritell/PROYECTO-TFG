@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import { AuthService } from '../auth/auth.service';
 import { ComentarioResponse } from '../../Interfaces/DTO/ComentarioResponse';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -148,6 +149,33 @@ removeFavorite(gameId: number): Observable<void> {
   getComentariosByVideojuego(id: number): Observable<ComentarioResponse[]> {
     return this.http.get<ComentarioResponse[]>(`${this.apiUrl}/${id}/comentarios`);
   }
+
+  comprarJuego(gameId: number, token: string): Observable<any> {
+  return this.http.post<any>(
+    `${this.apiUrl}/${gameId}/comprar`,
+    {},
+    {
+      headers: { Authorization: `Bearer ${token}` }
+    }
+  );
+}
+
+
+// método nuevo dentro de la clase VideogamesService
+getMyGamesPaginated(page: number, size: number): Observable<PaginatedResponse<VideojuegoDTO>> {
+  const token = localStorage.getItem('token') || '';
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  // Llamada al endpoint del backend que debe devolver paginado
+  // NOTE: el endpoint propuesto es: /api/v1/usuario/me/videojuegos-comprados?page=...&size=...
+  // Si tu backend usa otra ruta, cámbiala aquí.
+  const url = `http://localhost:8080/api/v1/usuario/me/videojuegos-comprados?page=${page}&size=${size}`;
+  return this.http.get<PaginatedResponse<VideojuegoDTO>>(url, { headers });
+}
+
+getMyGames(): Observable<VideojuegoDTO[]> {
+  return this.http.get<VideojuegoDTO[]>(`http://localhost:8080/api/v1/usuario/me/videojuegos-comprados`);
+}
+
 
 }
   /*filterData(valueToSearch: string): void {

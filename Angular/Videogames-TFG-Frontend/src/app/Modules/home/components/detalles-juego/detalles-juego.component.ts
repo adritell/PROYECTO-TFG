@@ -6,6 +6,7 @@ import { ComentarioResponse } from '../../../../Interfaces/DTO/ComentarioRespons
 import { ComentarioRequest } from '../../../../Interfaces/DTO/ComentarioRequest';
 import { CommentsService } from '../../../../Services/comments/comments.service';
 import { AuthService } from '../../../../Services/auth/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-detalles-juego',
@@ -50,8 +51,37 @@ export class DetallesJuegoComponent {
   }
 
   comprarJuego(): void {
-    console.log('Comprar juego');
-  }
+  if (!this.juego) return;
+
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: `¿Quieres comprar "${this.juego.nombre}" por ${this.juego.precio}€?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, comprar',
+    cancelButtonText: 'Cancelar',
+    reverseButtons: true
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        this.videogamesService.comprarJuego(this.juego!.id, token).subscribe({
+          next: (res: any) => {
+            Swal.fire('Éxito', res.message, 'success');
+          },
+          error: (err) => {
+            console.error('Error al comprar el juego', err);
+            Swal.fire('Error', err.error?.message || 'No se pudo completar la compra', 'error');
+          }
+        });
+      } else {
+        Swal.fire('No autenticado', 'Debes iniciar sesión para comprar.', 'warning');
+      }
+    }
+  });
+}
+
+
 
   agregarComentario(): void {
     const comentarioRequest: ComentarioRequest = {
