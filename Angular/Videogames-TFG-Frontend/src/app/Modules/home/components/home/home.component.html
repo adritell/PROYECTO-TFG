@@ -11,8 +11,8 @@
               <p class="card-text">{{game.descripcion}}</p>
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
-                  <!-- Botones para eliminar y editar, visibles solo para administradores -->
-                  <button *ngIf="isAdmin()" type="button" class="btn btn-sm btn-outline-secondary" (click)="deleteGame(game.id); $event.stopPropagation()">Delete</button>
+                  <!-- Botones para desactivar y editar, visibles solo para administradores -->
+                  <button *ngIf="isAdmin()" type="button" class="btn btn-sm btn-outline-secondary" (click)="desactivarGame(game.id); $event.stopPropagation()">Desactivar</button>
                   <button *ngIf="isAdmin()" type="button" class="btn btn-sm btn-outline-secondary" (click)="editarVideojuego(game.id); $event.stopPropagation()">Edit</button>
                   <button class="btn btn-primary" (click)="addWishList($event, game)">
                     <i class="bi" [ngClass]="{'bi-heart-fill text-danger': isFavorite(game), 'bi-heart': !isFavorite(game)}"></i>

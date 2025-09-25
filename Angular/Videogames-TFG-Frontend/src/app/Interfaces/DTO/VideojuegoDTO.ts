@@ -9,5 +9,6 @@ export interface VideojuegoDTO {
     publicador: string;
     plataformas: string[];
     imagePath: string;
-    isFavorite?: boolean;  // Añadido
+    activo: boolean;
+    isFavorite?: boolean;  
  }

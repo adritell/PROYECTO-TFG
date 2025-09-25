@@ -166,14 +166,25 @@ getMyGamesPaginated(page: number, size: number): Observable<PaginatedResponse<Vi
   const token = localStorage.getItem('token') || '';
   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
   // Llamada al endpoint del backend que debe devolver paginado
-  // NOTE: el endpoint propuesto es: /api/v1/usuario/me/videojuegos-comprados?page=...&size=...
-  // Si tu backend usa otra ruta, cámbiala aquí.
   const url = `http://localhost:8080/api/v1/usuario/me/videojuegos-comprados?page=${page}&size=${size}`;
   return this.http.get<PaginatedResponse<VideojuegoDTO>>(url, { headers });
 }
 
 getMyGames(): Observable<VideojuegoDTO[]> {
   return this.http.get<VideojuegoDTO[]>(`http://localhost:8080/api/v1/usuario/me/videojuegos-comprados`);
+}
+
+
+
+
+/*Métodos para desactivar videojuegos no disponibles para que no se compren */
+getVideojuegosActivosPaginados(page: number, size: number): Observable<any> {
+  return this.http.get<any>(`${this.apiUrl}/activos?page=${page}&size=${size}`);
+}
+
+desactivarVideojuego(gameId: number, token: string): Observable<any> {
+  const headers = { Authorization: `Bearer ${token}` };
+  return this.http.put(`${this.apiUrl}/${gameId}/desactivar`, {}, { headers });
 }
 
 

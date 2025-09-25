@@ -63,29 +63,29 @@ export class HomeComponent implements OnInit {
   }
 
   loadVideogames(): void {
-    this.videogames$ = this.videogamesService.getVideojuegosPaginados(this.currentPage, this.pageSize).pipe(
-      tap(response => {
-        this.totalElements = response.totalElements;
-        this.totalPages = response.totalPages;
-      }),
-      map(response => {
-        if (Array.isArray(response.content)) {
-          console.log(response.content);
-          return response.content;
-        } else {
-          console.error('Expected an array of videogames in response content but got', response.content);
-          return [];
-        }
-      }),
-      catchError(error => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error fetching games',
-          text: error.message || 'Unknown error'
-        });
-        return throwError(() => error);
-      })
-    );
+    this.videogames$ = this.videogamesService.getVideojuegosActivosPaginados(this.currentPage, this.pageSize).pipe(
+  tap(response => {
+    this.totalElements = response.totalElements;
+    this.totalPages = response.totalPages;
+  }),
+  map(response => {
+    if (Array.isArray(response.content)) {
+      console.log(response.content);
+      return response.content;
+    } else {
+      console.error('Expected an array of videogames in response content but got', response.content);
+      return [];
+    }
+  }),
+  catchError(error => {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error fetching games',
+      text: error.message || 'Unknown error'
+    });
+    return throwError(() => error);
+  })
+);
   }
 
   nextPage(): void {
@@ -285,8 +285,7 @@ export class HomeComponent implements OnInit {
 
 
   confirmarCompra(event: Event, game: VideojuegoDTO): void {
-  event.stopPropagation(); // Evita navegar al detalle del juego al hacer clic en el botón
-
+  event.stopPropagation(); 
   Swal.fire({
     title: '¿Estás seguro?',
     text: `¿Quieres comprar "${game.nombre}" por ${game.precio}€?`,
@@ -311,6 +310,34 @@ export class HomeComponent implements OnInit {
       } else {
         Swal.fire('No autenticado', 'Debes iniciar sesión para comprar.', 'warning');
       }
+    }
+  });
+}
+
+
+
+/*Método para desactivar videojuegos no disponibles para que no se compren */
+  desactivarGame(gameId: number): void {
+  const token = this.authService.getToken();
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: 'El juego será marcado como no disponible, pero los usuarios que lo tengan comprado podrán seguir jugándolo.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, desactivar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.videogamesService.desactivarVideojuego(gameId, token).subscribe(
+        () => {
+          Swal.fire('Desactivado', 'El videojuego fue marcado como no disponible.', 'success');
+          this.loadVideogames();
+        },
+        error => {
+          console.error('Error desactivando juego', error);
+          Swal.fire('Error', 'No se pudo desactivar el videojuego', 'error');
+        }
+      );
     }
   });
 }

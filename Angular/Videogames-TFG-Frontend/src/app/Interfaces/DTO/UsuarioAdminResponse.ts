@@ -5,4 +5,5 @@ export interface UsuarioAdminResponse {
     email: string;
     activo: boolean;
     roles: string[];
+    saldo: number;
 }

@@ -5,6 +5,8 @@
     </div>
     <div class="card-body">
       <p><strong>Email:</strong> {{ user.email }}</p>
+      <p><strong>Saldo:</strong> {{ user.saldo | currency:'EUR':'symbol':'1.2-2' }}</p>
+
       <ng-container *ngIf="isUsuarioAdminResponse(user)">
         <p><strong>Apellidos:</strong> {{ user.apellidos }}</p>
         <p><strong>Roles:</strong> {{ user.roles.join(', ') }}</p>
